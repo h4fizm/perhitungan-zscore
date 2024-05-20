@@ -61,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/edit-pasien/{id}', [ListPasienController::class, 'edit'])->name('edit-pasien');
     // Update Pasien
     Route::put('/update-pasien/{id}', [ListPasienController::class, 'update'])->name('update-pasien');
-    // Fungsi Hapus Pasien
+    // Delete Pasien
     Route::delete('/list-pasien/{id}', [ListPasienController::class, 'destroy'])->name('list-pasien.destroy');
 
     // Info Data Pengukuran Pasien
@@ -69,11 +69,12 @@ Route::middleware(['auth'])->group(function () {
     // Fungsi Tambah Data
     Route::get('/tambah-pengukuran/{id}', [PasienController::class, 'tambah'])->name('tambah-pengukuran');
     Route::post('/tambah-pengukuran/{id}', [PasienController::class, 'simpan'])->name('simpan-pengukuran');
-    // Fungsi Update Data
+    // Edit Data
     Route::get('/edit-pengukuran/{id}', [PasienController::class, 'edit'])->name('edit-pengukuran');
-    Route::post('/update-pengukuran/{id}', [PasienController::class, 'update'])->name('update-pengukuran');
-    // Hapus Data Pengukuran Pasien
-    Route::delete('/hapus-pengukuran/{id}', [PasienController::class, 'destroy'])->name('hapus-pengukuran');
+    Route::put('/edit-pengukuran/{id}', [PasienController::class, 'update'])->name('update-pengukuran');
+    // Hapus Data 
+    Route::delete('/delete-pengukuran/{id}', [PasienController::class, 'delete'])->name('delete-pengukuran');
+
 
 
     // Fungsi Menu Profil

@@ -108,6 +108,10 @@
         </div>
     </div>
     {{-- Tabel Banyak Data Pengukuran Pasien --}}
+    @php
+    use Carbon\Carbon;
+    @endphp
+
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
@@ -116,7 +120,7 @@
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">
-                       <table id="userTable" class="table align-items-center mb-0">
+                        <table id="userTable" class="table align-items-center mb-0">
                             <thead>
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">No</th>
@@ -129,66 +133,64 @@
                                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                               @foreach ($pengukuran as $index => $data)
-                                <tr>
-                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $index + 1 }}</td>
-                                    <td class="text-secondary font-weight-bold text-xs">
-                                        @if($data->tanggal_pengukuran)
-                                            {{ \Carbon\Carbon::parse($data->tanggal_pengukuran)->format('d F Y') }}
-                                        @endif
-                                    </td>
-                                    <td class="text-secondary font-weight-bold text-xs">{{ $data->umur }} Bulan</td>
-                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $data->berat_badan }}</td>
-                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $data->tinggi_badan }}</td>
-                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $data->status_gizi }}</td>
-                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $data->status_tinggi}}</td>
-                                    <td class="align-middle text-center">
-                                        <div class="d-inline-flex justify-content-center align-items-center">
-                                            <a href="{{ route('edit-pengukuran', ['id' => $data->id]) }}" class="badge bg-gradient-warning text-decoration-none me-1 btn-style mb-3" style="background-color: #ffc107; color: #fff;" data-toggle="tooltip" data-original-title="Edit user">Edit</a>
-                                            <!-- Form untuk delete dengan method DELETE -->
-                                            <form id="delete-form-{{ $index }}" action="{{ route('hapus-pengukuran', ['id' => $data->id]) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <!-- Tombol untuk delete dengan sweetalert -->
-                                                <button type="button" class="badge bg-gradient-danger text-decoration-none ms-1 btn-style delete-btn" style="background-color: #dc3545; color: #fff; " data-user-id="{{ $index }}">Hapus</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
+                                <tbody>
+                                    @foreach($measurements as $index => $measurement)
+                                    <tr>
+                                        <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $index + 1 }}</td>
+                                        <td class="text-secondary font-weight-bold text-xs">{{ Carbon::parse($measurement->tanggal_pengukuran)->translatedFormat('d F Y') }}</td>
+                                        <td class="text-secondary font-weight-bold text-xs">{{ $measurement->umur }} Bulan</td>
+                                        <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $measurement->berat_badan }}</td>
+                                        <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $measurement->tinggi_badan }}</td>
+                                        <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $measurement->status_gizi }}</td>
+                                        <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $measurement->status_tinggi }}</td>
+                                        <td class="align-middle text-center">
+                                            <div class="d-inline-flex flex-column align-items-center">
+                                                @if($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
+                                                <a href="{{ route('edit-pengukuran', ['id' => $measurement->id]) }}" class="btn btn-warning btn-sm mb-2" style="width: 80px; padding: 5px;">Edit</a>
+                                                <form id="delete-form-{{ $measurement->id }}" action="{{ route('delete-pengukuran', ['id' => $measurement->id]) }}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-danger btn-sm" style="width: 80px; padding: 5px;" onclick="confirmDelete({{ $measurement->id }})">Hapus</button>
+                                                </form>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                    @if($measurements->isEmpty())
+                                    <tr>
+                                        <td colspan="8" class="text-center text-secondary font-weight-bold text-xs">Tidak ada data pengukuran</td>
+                                    </tr>
+                                    @endif
+                                </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+
 </div>
 @endsection
 
+<!-- SweetAlert Script -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const deleteBtns = document.querySelectorAll('.delete-btn');
-        deleteBtns.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const userId = this.getAttribute('data-user-id');
-                swal({
-                    title: "Apakah Anda yakin?",
-                    text: "Anda akan menghapus pengguna ini.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        document.getElementById('delete-form-' + userId).submit();
-                    } else {
-                        swal("Penghapusan dibatalkan.");
-                    }
-                });
-            });
+    function confirmDelete(id) {
+        swal({
+            title: "Apakah Anda yakin?",
+            text: "Anda akan menghapus pengukuran ini.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                document.getElementById('delete-form-' + id).submit();
+            } else {
+                swal("Penghapusan dibatalkan.");
+            }
         });
-    });
+    }
 </script>

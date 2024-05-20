@@ -10,14 +10,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('bb-laki-laki', function (Blueprint $table) {
-            $table->integer('umur')->primary(); // Umur sebagai primary key
-            $table->decimal('-3SD', 8, 2);
-            $table->decimal('-2SD', 8, 2);
-            $table->decimal('-1SD', 8, 2);
-            $table->decimal('median', 8, 2);
-            $table->decimal('1SD', 8, 2);
-            $table->decimal('2SD', 8, 2);
-            $table->decimal('3SD', 8, 2);
+            $table->integer('UMUR')->primary(); // UMUR sebagai primary key
+            $table->decimal('N3SD', 8, 2);
+            $table->decimal('N2SD', 8, 2);
+            $table->decimal('N1SD', 8, 2);
+            $table->decimal('MEDIAN', 8, 2);
+            $table->decimal('P1SD', 8, 2);
+            $table->decimal('P2SD', 8, 2);
+            $table->decimal('P3SD', 8, 2);
             $table->timestamps();
         });
     }

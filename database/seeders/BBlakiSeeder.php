@@ -13,9 +13,9 @@ class BBlakiSeeder extends Seeder
     public function run(): void
     {
         $data = [
-            ['umur' => 0, '-3SD' => 2.1, '-2SD' => 2.5, '-1SD' => 2.9, 'median' => 3.3, '1SD' => 3.9, '2SD' => 4.4, '3SD' => 5.0],
-            ['umur' => 1, '-3SD' => 2.9, '-2SD' => 3.4, '-1SD' => 3.9, 'median' => 4.5, '1SD' => 5.1, '2SD' => 5.8, '3SD' => 6.6],
-            ['umur' => 2, '-3SD' => 3.8, '-2SD' => 4.3, '-1SD' => 4.9, 'median' => 5.6, '1SD' => 6.3, '2SD' => 7.1, '3SD' => 8.0],
+            ['UMUR' => 0, 'N3SD' => 2.1, 'N2SD' => 2.5, 'N1SD' => 2.9, 'MEDIAN' => 3.3, 'P1SD' => 3.9, 'P2SD' => 4.4, 'P3SD' => 5.0],
+            ['UMUR' => 1, 'N3SD' => 2.9, 'N2SD' => 3.4, 'N1SD' => 3.9, 'MEDIAN' => 4.5, 'P1SD' => 5.1, 'P2SD' => 5.8, 'P3SD' => 6.6],
+            ['UMUR' => 2, 'N3SD' => 3.8, 'N2SD' => 4.3, 'N1SD' => 4.9, 'MEDIAN' => 5.6, 'P1SD' => 6.3, 'P2SD' => 7.1, 'P3SD' => 8.0],
         ];
 
         // Masukkan data ke dalam tabel

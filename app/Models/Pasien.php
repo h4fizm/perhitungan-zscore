@@ -9,23 +9,17 @@ class Pasien extends Model
 {
     use HasFactory;
 
-    protected $table = 'pasien'; // Menetapkan nama tabel
+    protected $table = 'pasien';
 
-    protected $fillable = ['nik', 'nama', 'alamat', 'tanggal_lahir', 'jenis_kelamin', 'id_location']; // Tambahkan 'jenis_kelamin' ke fillable
+    protected $fillable = [
+        'nik', 'nama', 'alamat', 'tanggal_lahir',
+        'jenis_kelamin', 'id_location', 'tanggal_pengukuran',
+        'umur', 'berat_badan', 'tinggi_badan', 'status_gizi',
+        'status_tinggi'
+    ];
 
     public function location()
     {
         return $this->belongsTo(Location::class, 'id_location');
     }
-
-    // Ubah nama metode menjadi jenisKelamin
-    public function jenisKelamin()
-    {
-        return $this->attributes['jenis_kelamin']; // Kembalikan nilai langsung dari atribut 'jenis_kelamin'
-    }
-    public function pengukuran()
-    {
-        return $this->hasMany(Pengukuran::class, 'id_pasien', 'id');
-    }
-
 }

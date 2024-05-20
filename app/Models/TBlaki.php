@@ -21,7 +21,7 @@ class TBlaki extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'umur';
+    protected $primaryKey = 'UMUR';
 
     /**
      * Indicates if the model's primary key is auto-incrementing.
@@ -36,6 +36,6 @@ class TBlaki extends Model
      * @var array
      */
     protected $fillable = [
-        'umur', '-3SD', '-2SD', '-1SD', 'median', '1SD', '2SD', '3SD',
+        'UMUR', 'N3SD', 'N2SD', 'N1SD', 'MEDIAN', 'P1SD', 'P2SD', 'P3SD',
     ];
 }
