@@ -38,7 +38,7 @@ class PasienSeeder extends Seeder
                 'id_location' => 3,
                 'alamat' => 'Jl. Merdeka No. 456',
                 'tanggal_pengukuran' => '2023-01-02',
-                'umur' => 27,
+                'umur' => 3,
                 'berat_badan' => 0,
                 'tinggi_badan' => 0,
                 'status_gizi' => 'normal',      //'stunting', 'normal', 'obesitas'
