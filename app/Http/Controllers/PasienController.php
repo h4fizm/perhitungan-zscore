@@ -28,9 +28,18 @@ class PasienController extends Controller
 
         $medianValue = null;
 
+        $n3sdData = [];
+        $p3sdData = [];
+        $n2sdData = [];
+        $p2sdData = [];
+        $n1sdData = [];
+        $p1sdData = [];
+        $labels = [];
+
         if ($pasien->jenis_kelamin == 'laki-laki') {
+            $dataBBPasien = BBlaki::orderBy('UMUR')->get();
+            $dataTBPasien = TBlaki::orderBy('UMUR')->get();
             $Weight = $pasien->berat_badan;
-            
             $height = $pasien->tinggi_badan;
             if ($height > 0){
                 // Fetch the Median value from bb-laki-laki table based on the patient's age
@@ -111,7 +120,9 @@ class PasienController extends Controller
             }        
         } else{
             $medianRecord = BBperempuan::where('UMUR', $pasien->umur)->first();
-    
+            $dataBBPasien = BBperempuan::orderBy('UMUR')->get();
+            $dataTBPasien = TBperempuan::orderBy('UMUR')->get();
+
             $medianHeight = TBperempuan::where('UMUR', $pasien->umur)->first();
             // Check if the record exists and retrieve the Median value
             if ($medianRecord) {
@@ -198,9 +209,28 @@ class PasienController extends Controller
                 $ZScore = null; // Set ZScore to null if Weight is not greater than 0
             }       
         }
+        foreach ($dataBBPasien as $record) {
+            $bblabels[] = $record->UMUR;
+            $bbp3sdData[] = $record->P3SD;
+            $bbp2sdData[] = $record->P2SD;
+            $bbp1sdData[] = $record->P1SD;
+            $bbn1sdData[] = $record->N1SD;
+            $bbn2sdData[] = $record->N2SD;
+            $bbn3sdData[] = $record->N3SD;
+        }
+        foreach ($dataTBPasien as $TBRecord) {
+            $tblabels[] = $TBRecord->UMUR;
+            $tbp3sdData[] = $TBRecord->P3SD;
+            $tbp2sdData[] = $TBRecord->P2SD;
+            $tbp1sdData[] = $TBRecord->P1SD;
+            $tbn1sdData[] = $TBRecord->N1SD;
+            $tbn2sdData[] = $TBRecord->N2SD;
+            $tbn3sdData[] = $TBRecord->N3SD;
+        }
+
         // dd($ZScore);exit();
 
-        return view('menu.detail-pengukuran', compact('pasien', 'jenis_kelamin', 'faskes', 'measurements', 'umurOptions', 'id', 'medianValue', 'ZScore'));
+        return view('menu.detail-pengukuran', compact('pasien', 'jenis_kelamin', 'faskes', 'measurements', 'umurOptions', 'id', 'medianValue', 'ZScore', 'bbn3sdData', 'tbn3sdData', 'bbn2sdData', 'tbn2sdData', 'bbn1sdData', 'tbn1sdData','bbp1sdData', 'tbp1sdData', 'bbp2sdData', 'tbp2sdData', 'bbp3sdData', 'tbp3sdData', 'bblabels', 'tblabels'));
     }
 
     public function tambah($id)

@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('style/assets/css/argon-dashboard.css?v=2.0.4')}}" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 

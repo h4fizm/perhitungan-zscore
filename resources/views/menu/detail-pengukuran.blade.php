@@ -57,20 +57,17 @@
             </div>
         </div>
     </div>
-    {{-- Grafik --}}
+    {{-- Grafik pertama --}}
     <div class="row">
         <div class="col-lg-12 mb-4">
             <div class="card z-index-2 h-100">
                 <div class="card-header pb-0 pt-3 bg-transparent">
                     <h6 class="text-capitalize">Grafik Berat Badan Menurut Umur</h6>
                     <p class="text-sm mb-0">
-                       
+                        <div style="width: 100%; margin: auto;">
+                            <canvas id="myChart"></canvas>
+                        </div>
                     </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
-                    </div>
                 </div>
             </div>
         </div>
@@ -96,13 +93,8 @@
                 <div class="card-header pb-0 pt-3 bg-transparent">
                     <h6 class="text-capitalize">Grafik Berat Badan Menurut Tinggi Badan</h6>
                     <p class="text-sm mb-0">
-                        
+
                     </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
-                    </div>
                 </div>
             </div>
         </div>
@@ -194,3 +186,131 @@
         });
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const labels = @json($bblabels);
+    const n3sdData = @json($bbn3sdData);
+    const p3sdData = @json($bbp3sdData);
+    const n2sdData = @json($bbn2sdData);
+    const p2sdData = @json($bbp2sdData);
+    const n1sdData = @JSON($bbn1sdData);
+    const p1sdData = @json($bbp1sdData);
+    const baseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'blue' : 'red' }}";
+    const overlayColor = 'orange';
+    const midColor = 'green';
+
+    const data = {
+    labels: labels,
+    datasets: [
+        {
+            label: 'N3SD',
+            data: n3sdData,
+            fill: '+1',
+            backgroundColor: baseColor,
+            borderColor: baseColor,
+            borderWidth: 1,
+            order: 3
+        },
+        {
+            label: 'P3SD',
+            data: p3sdData,
+            fill: '-1',
+            backgroundColor: baseColor,
+            borderColor: baseColor,
+            borderWidth: 1,
+            order: 3
+        },
+        {
+            label: 'N2SD',
+            data: n2sdData,
+            fill: '+1',
+            backgroundColor: overlayColor,
+            borderColor: overlayColor,
+            borderWidth: 1,
+            order: 2
+        },
+        {
+            label: 'P2SD',
+            data: p2sdData,
+            fill: '-1',
+            backgroundColor: overlayColor,
+            borderColor: overlayColor,
+            borderWidth: 1,
+            order: 2
+        },
+        {
+            label: 'N1SD',
+            data: n1sdData,
+            fill: '+1',
+            backgroundColor: midColor,
+            borderColor: midColor,
+            borderWidth: 1,
+            order: 1
+        },
+        {
+            label: 'P1SD',
+            data: p1sdData,
+            fill: '-1',
+            backgroundColor: midColor,
+            borderColor: midColor,
+            borderWidth: 1,
+            order: 1
+        }
+    ]
+    };
+
+    const config = {
+    type: 'line',
+    data: data,
+    options: {
+        responsive: true,
+        plugins: {
+        title: {
+            display: true,
+            text: 'Chart.js Line Chart'
+        },
+        tooltip: {
+            // Hide the tooltip entirely
+            enabled: false,
+            // OR (optional): Customize tooltip content to display only labels
+            callbacks: {
+            label: (context) => {
+                const label = context.dataset.label;
+                return label;
+            }
+            }
+        }
+        },
+        interaction: {
+        mode: 'index',
+        intersect: false
+        },
+        scales: {
+        x: {
+            display: true,
+            title: {
+            display: true,
+            text: 'Month'
+            }
+        },
+        y: {
+            display: true,
+            title: {
+            display: true,
+            text: 'Value'
+            }
+        }
+        }
+    }
+    };
+
+    window.onload = function() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, config);
+    };
+
+  </script>
+
+
+
