@@ -77,13 +77,10 @@
                 <div class="card-header pb-0 pt-3 bg-transparent">
                     <h6 class="text-capitalize">Grafik Tinggi Badan Menurut Umur</h6>
                     <p class="text-sm mb-0">
-
+                        <div style="width: 100%; margin: auto;">
+                            <canvas id="heightToAgeChart"></canvas>
+                        </div>
                     </p>
-                </div>
-                <div class="card-body p-3">
-                    <div class="chart">
-                        <canvas id="chart-line" class="chart-canvas" height="300"></canvas>
-                    </div>
                 </div>
             </div>
         </div>
@@ -188,128 +185,219 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
+
 <script>
-    const labels = @json($bblabels);
-    const n3sdData = @json($bbn3sdData);
-    const p3sdData = @json($bbp3sdData);
-    const n2sdData = @json($bbn2sdData);
-    const p2sdData = @json($bbp2sdData);
-    const n1sdData = @JSON($bbn1sdData);
-    const p1sdData = @json($bbp1sdData);
-    const baseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'blue' : 'red' }}";
-    const overlayColor = 'orange';
+    // Weight to Age Chart
+    const weightToAgeLabels = @json($bblabels);
+    const n3sdWeightData = @json($bbn3sdData);
+    const p3sdWeightData = @json($bbp3sdData);
+    const n2sdWeightData = @json($bbn2sdData);
+    const p2sdWeightData = @json($bbp2sdData);
+    const n1sdWeightData = @json($bbn1sdData);
+    const p1sdWeightData = @json($bbp1sdData);
+    const weightBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'blue' : 'red' }}";
+    const weightOverlayColor = 'orange';
     const midColor = 'green';
 
-    const data = {
-    labels: labels,
-    datasets: [
+    const weightToAgeData = {
+      labels: weightToAgeLabels,
+      datasets: [
         {
-            label: 'N3SD',
-            data: n3sdData,
-            fill: '+1',
-            backgroundColor: baseColor,
-            borderColor: baseColor,
-            borderWidth: 1,
-            order: 3
+          label: 'N3SD',
+          data: n3sdWeightData,
+          fill: '+1',
+          backgroundColor: weightBaseColor,
+          borderColor: weightBaseColor,
+          borderWidth: 1,
+          order: 3
         },
         {
-            label: 'P3SD',
-            data: p3sdData,
-            fill: '-1',
-            backgroundColor: baseColor,
-            borderColor: baseColor,
-            borderWidth: 1,
-            order: 3
+          label: 'P3SD',
+          data: p3sdWeightData,
+          fill: '-1',
+          backgroundColor: weightBaseColor,
+          borderColor: weightBaseColor,
+          borderWidth: 1,
+          order: 3
         },
         {
-            label: 'N2SD',
-            data: n2sdData,
-            fill: '+1',
-            backgroundColor: overlayColor,
-            borderColor: overlayColor,
-            borderWidth: 1,
-            order: 2
+          label: 'N2SD',
+          data: n2sdWeightData,
+          fill: '+1',
+          backgroundColor: weightOverlayColor,
+          borderColor: weightOverlayColor,
+          borderWidth: 1,
+          order: 2
         },
         {
-            label: 'P2SD',
-            data: p2sdData,
-            fill: '-1',
-            backgroundColor: overlayColor,
-            borderColor: overlayColor,
-            borderWidth: 1,
-            order: 2
+          label: 'P2SD',
+          data: p2sdWeightData,
+          fill: '-1',
+          backgroundColor: weightOverlayColor,
+          borderColor: weightOverlayColor,
+          borderWidth: 1,
+          order: 2
         },
         {
-            label: 'N1SD',
-            data: n1sdData,
-            fill: '+1',
-            backgroundColor: midColor,
-            borderColor: midColor,
-            borderWidth: 1,
-            order: 1
+          label: 'N1SD',
+          data: n1sdWeightData,
+          fill: '+1',
+          backgroundColor: midColor,
+          borderColor: midColor,
+          borderWidth: 1,
+          order: 1
         },
         {
-            label: 'P1SD',
-            data: p1sdData,
-            fill: '-1',
-            backgroundColor: midColor,
-            borderColor: midColor,
-            borderWidth: 1,
-            order: 1
+          label: 'P1SD',
+          data: p1sdWeightData,
+          fill: '-1',
+          backgroundColor: midColor,
+          borderColor: midColor,
+          borderWidth: 1,
+          order: 1
         }
-    ]
+      ]
     };
 
-    const config = {
-    type: 'line',
-    data: data,
-    options: {
+    const weightToAgeConfig = {
+      type: 'line',
+      data: weightToAgeData,
+      options: {
         responsive: true,
         plugins: {
-        title: {
+          title: {
             display: true,
-            text: 'Chart.js Line Chart'
-        },
-        tooltip: {
-            // Hide the tooltip entirely
-            enabled: false,
-            // OR (optional): Customize tooltip content to display only labels
-            callbacks: {
-            label: (context) => {
-                const label = context.dataset.label;
-                return label;
-            }
-            }
-        }
-        },
-        interaction: {
-        mode: 'index',
-        intersect: false
+            text: 'Weight to Age Chart'
+          },
         },
         scales: {
-        x: {
+          x: {
             display: true,
             title: {
-            display: true,
-            text: 'Month'
+              display: true,
+              text: 'Age'
             }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Weight'
+            }
+          }
+        }
+      },
+    };
+
+    // Height to Age Chart
+    const heightToAgeLabels = @json($heightToAgeLabels);
+    const n3sdHeightData = @json($n3sdHeightData);
+    const p3sdHeightData = @json($p3sdHeightData);
+    const n2sdHeightData = @json($n2sdHeightData);
+    const p2sdHeightData = @json($p2sdHeightData);
+    const n1sdHeightData = @json($n1sdHeightData);
+    const p1sdHeightData = @json($p1sdHeightData);
+    const heightBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'blue' : 'red' }}";
+    const heightOverlayColor = 'orange';
+
+    const heightToAgeData = {
+      labels: heightToAgeLabels,
+      datasets: [
+        {
+          label: 'N3SD',
+          data: n3sdHeightData,
+          fill: '+1',
+          backgroundColor: heightBaseColor,
+          borderColor: heightBaseColor,
+          borderWidth: 1,
+          order: 3
         },
-        y: {
+        {
+          label: 'P3SD',
+          data: p3sdHeightData,
+          fill: '-1',
+          backgroundColor: heightBaseColor,
+          borderColor: heightBaseColor,
+          borderWidth: 1,
+          order: 3
+        },
+        {
+          label: 'N2SD',
+          data: n2sdHeightData,
+          fill: '+1',
+          backgroundColor: heightOverlayColor,
+          borderColor: heightOverlayColor,
+          borderWidth: 1,
+          order: 2
+        },
+        {
+          label: 'P2SD',
+          data: p2sdHeightData,
+          fill: '-1',
+          backgroundColor: heightOverlayColor,
+          borderColor: heightOverlayColor,
+          borderWidth: 1,
+          order: 2
+        },
+        {
+          label: 'N1SD',
+          data: n1sdHeightData,
+          fill: '+1',
+          backgroundColor: midColor,
+          borderColor: midColor,
+          borderWidth: 1,
+          order: 1
+        },
+        {
+          label: 'P1SD',
+          data: p1sdHeightData,
+          fill: '-1',
+          backgroundColor: midColor,
+          borderColor: midColor,
+          borderWidth: 1,
+          order: 1
+        }
+      ]
+    };
+
+    const heightToAgeConfig = {
+      type: 'line',
+      data: heightToAgeData,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Height to Age Chart'
+          },
+        },
+        scales: {
+          x: {
             display: true,
             title: {
-            display: true,
-            text: 'Value'
+              display: true,
+              text: 'Age'
             }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Height'
+            }
+          }
         }
-        }
-    }
+      },
     };
 
     window.onload = function() {
-    const ctx = document.getElementById('myChart').getContext('2d');
-    new Chart(ctx, config);
-    };
+      const weightCtx = document.getElementById('myChart').getContext('2d');
+      new Chart(weightCtx, weightToAgeConfig);
 
+      const heightCtx = document.getElementById('heightToAgeChart').getContext('2d');
+      new Chart(heightCtx, heightToAgeConfig);
+    };
   </script>
 
 

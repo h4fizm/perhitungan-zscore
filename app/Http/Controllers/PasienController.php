@@ -28,17 +28,17 @@ class PasienController extends Controller
 
         $medianValue = null;
 
-        $n3sdData = [];
-        $p3sdData = [];
-        $n2sdData = [];
-        $p2sdData = [];
-        $n1sdData = [];
-        $p1sdData = [];
+        $bbn3sdData = [];
+        $bbp3sdData = [];
+        $bbn2sdData = [];
+        $bbp2sdData = [];
+        $bbn1sdData = [];
+        $bbp1sdData = [];
         $labels = [];
 
         if ($pasien->jenis_kelamin == 'laki-laki') {
             $dataBBPasien = BBlaki::orderBy('UMUR')->get();
-            $dataTBPasien = TBlaki::orderBy('UMUR')->get();
+            $tbData = TBlaki::orderBy('UMUR')->get();
             $Weight = $pasien->berat_badan;
             $height = $pasien->tinggi_badan;
             if ($height > 0){
@@ -121,7 +121,7 @@ class PasienController extends Controller
         } else{
             $medianRecord = BBperempuan::where('UMUR', $pasien->umur)->first();
             $dataBBPasien = BBperempuan::orderBy('UMUR')->get();
-            $dataTBPasien = TBperempuan::orderBy('UMUR')->get();
+            $tbData = TBperempuan::orderBy('UMUR')->get();
 
             $medianHeight = TBperempuan::where('UMUR', $pasien->umur)->first();
             // Check if the record exists and retrieve the Median value
@@ -218,19 +218,31 @@ class PasienController extends Controller
             $bbn2sdData[] = $record->N2SD;
             $bbn3sdData[] = $record->N3SD;
         }
-        foreach ($dataTBPasien as $TBRecord) {
-            $tblabels[] = $TBRecord->UMUR;
-            $tbp3sdData[] = $TBRecord->P3SD;
-            $tbp2sdData[] = $TBRecord->P2SD;
-            $tbp1sdData[] = $TBRecord->P1SD;
-            $tbn1sdData[] = $TBRecord->N1SD;
-            $tbn2sdData[] = $TBRecord->N2SD;
-            $tbn3sdData[] = $TBRecord->N3SD;
+
+        // Second chart data (Height to Age)
+        $heightToAgeLabels = [];
+        $n3sdHeightData = [];
+        $p3sdHeightData = [];
+        $n2sdHeightData = [];
+        $p2sdHeightData = [];
+        $n1sdHeightData = [];
+        $p1sdHeightData = [];
+        
+
+        foreach ($tbData as $record) {
+            $heightToAgeLabels[] = $record->UMUR;
+            $n3sdHeightData[] = $record->N3SD;
+            $p3sdHeightData[] = $record->P3SD;
+            $n2sdHeightData[] = $record->N2SD;
+            $p2sdHeightData[] = $record->P2SD;
+            $n1sdHeightData[] = $record->N1SD;
+            $p1sdHeightData[] = $record->P1SD;
         }
+
 
         // dd($ZScore);exit();
 
-        return view('menu.detail-pengukuran', compact('pasien', 'jenis_kelamin', 'faskes', 'measurements', 'umurOptions', 'id', 'medianValue', 'ZScore', 'bbn3sdData', 'tbn3sdData', 'bbn2sdData', 'tbn2sdData', 'bbn1sdData', 'tbn1sdData','bbp1sdData', 'tbp1sdData', 'bbp2sdData', 'tbp2sdData', 'bbp3sdData', 'tbp3sdData', 'bblabels', 'tblabels'));
+        return view('menu.detail-pengukuran', compact('pasien', 'jenis_kelamin', 'faskes', 'measurements', 'umurOptions', 'id', 'medianValue', 'ZScore', 'bbn3sdData', 'n3sdHeightData', 'bbn2sdData', 'n2sdHeightData', 'bbn1sdData', 'n1sdHeightData','bbp1sdData', 'p1sdHeightData', 'bbp2sdData', 'p2sdHeightData', 'bbp3sdData', 'p3sdHeightData', 'bblabels', 'heightToAgeLabels'));
     }
 
     public function tambah($id)
