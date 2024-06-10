@@ -21,7 +21,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('style/assets/css/argon-dashboard.css?v=2.0.4')}}" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {{-- Bootstrap Icon --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 
 </head>
 
@@ -208,6 +209,8 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{ asset('style/assets/js/argon-dashboard.min.js?v=2.0.4')}}"></script>
+  {{-- Chart JS --}}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  
  
 </body>

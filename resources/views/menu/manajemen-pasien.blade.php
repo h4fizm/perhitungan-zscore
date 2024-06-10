@@ -26,56 +26,83 @@
                                     <tr>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-5">
-                                            NIK</th>
+                                            NIK
+                                        </th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                            Nama</th>
+                                            Nama
+                                        </th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Jenis Kelamin</th>
+                                            Jenis Kelamin
+                                        </th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Umur</th>
+                                            Umur
+                                        </th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Lokasi Faskes</th>
+                                            Lokasi Faskes
+                                        </th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Status Pasien</th>
+                                            Status Pasien
+                                        </th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Aksi</th>
+                                            Aksi
+                                        </th>
                                     </tr>
                                 </thead>
-                               <tbody>
-                                 @if($pasien->isNotEmpty())
+                                <tbody>
+                                    @if ($pasien->isNotEmpty())
                                         @foreach ($pasien as $data)
                                             <tr>
-                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    {{ $data->nik }}</td>
-                                                <td class="text-secondary font-weight-bold text-xs">{{ $data->nama }}</td>
-                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    @if($data->jenis_kelamin == 'laki-laki')
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ $data->nik }}
+                                                </td>
+                                                <td class="text-secondary font-weight-bold text-xs">
+                                                    {{ $data->nama }}
+                                                </td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    @if ($data->jenis_kelamin == 'laki-laki')
                                                         <span class="badge bg-primary">Laki-laki</span>
                                                     @else
                                                         <span class="badge bg-danger">Perempuan</span>
                                                     @endif
                                                 </td>
-                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    {{ $data->umur }} Bulan</td>
-                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    {{ $data->location->name_location }}</td>
-                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    XXXXXX</td>
-                                                <!-- Jika ada kolom status pasien, tambahkan di sini -->
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ $data->umur }} Bulan
+                                                </td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ $data->location->name_location }}
+                                                </td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    XXXXXX
+                                                </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-inline-flex flex-column align-items-center">
-                                                        <a href="{{ route('detail-pengukuran', $data->id) }}" class="badge bg-gradient-info text-decoration-none me-1 btn-style mb-2" style="background-color: #17a2b8; color: #fff; width: 100px; padding: 5px;" data-toggle="tooltip" data-original-title="Info user">Info</a>
-                                                        <a href="{{ route('edit-pasien', $data->id) }}" class="badge bg-gradient-warning text-decoration-none me-1 btn-style mb-2" style="background-color: #ffc107; color: #fff; width: 100px; padding: 5px;" data-toggle="tooltip" data-original-title="Edit user">Edit</a>
-                                                        <form id="delete-form-{{ $data->id }}" action="{{ route('list-pasien.destroy', $data->id) }}" method="POST">
+                                                        <a href="{{ route('detail-pengukuran', $data->id) }}"
+                                                            class="btn btn-info btn-sm mb-2"
+                                                            style="width: 100px; padding: 5px;" data-toggle="tooltip"
+                                                            data-original-title="Info user">INFO</a>
+                                                        <a href="{{ route('edit-pasien', $data->id) }}"
+                                                            class="btn btn-warning btn-sm mb-2"
+                                                            style="width: 100px; padding: 5px;" data-toggle="tooltip"
+                                                            data-original-title="Edit user">EDIT</a>
+                                                        <form id="delete-form-{{ $data->id }}"
+                                                            action="{{ route('list-pasien.destroy', $data->id) }}"
+                                                            method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="button" class="badge bg-gradient-danger text-decoration-none mr-1 btn-style delete-btn" style="background-color: #dc3545; color: #fff; width: 100px; padding: 5px;" data-user-id="{{ $data->id }}">Hapus</button>
+                                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
+                                                                style="width: 100px; padding: 5px;"
+                                                                data-user-id="{{ $data->id }}">HAPUS</button>
                                                         </form>
                                                     </div>
                                                 </td>
