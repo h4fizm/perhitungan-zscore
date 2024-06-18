@@ -55,7 +55,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {{-- Button Kembali --}}
+
                             <a href="{{ route('list-pasien') }}" class="btn btn-secondary btn-sm">Kembali</a>
                             <button type="button" class="btn btn-primary btn-sm float-end"
                                 onclick="window.location='{{ route('tambah-pengukuran', ['id' => $id]) }}'">+ Tambah Data
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </div>
-        {{-- Grafik pertama --}}
+        
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <div class="card z-index-2 h-100">
@@ -79,6 +79,12 @@
                     </div>
                 </div>
             </div>
+            <p>{{ $ZScoreWeight }}</p>
+            <p>{{ $ZScoreHeight }}</p>
+            <p>Z Score untuk Berat Badan Menurut Tinggi Badan</p>
+            <p>{{ $ZScoreWH }}</p>
+            <p>ini ada</p>
+
             {{-- Grafik kedua --}}
             <div class="col-lg-12 mb-4">
                 <div class="card z-index-2 h-100">
@@ -98,7 +104,9 @@
                     <div class="card-header pb-0 pt-3 bg-transparent">
                         <h6 class="text-capitalize">Grafik Berat Badan Menurut Tinggi Badan</h6>
                         <p class="text-sm mb-0">
-
+                        <div style="width: 100%; margin: auto;">
+                            <canvas id="weightToHeightChart"></canvas>
+                        </div>
                         </p>
                     </div>
                 </div>
@@ -228,6 +236,13 @@
 
 
 <script>
+    const ZScoreWH = @json($ZScoreWH);
+    const ZScoreHeight = @json($ZScoreHeight);
+    const ZScoreWeight = @json($ZScoreWeight);
+    const Weight = @json($Weight);
+    const Height = @json($height);
+    const Age = @json($pasien->umur);
+
     // Weight to Age Chart
     const weightToAgeLabels = @json($bblabels);
     const n3sdWeightData = @json($bbn3sdData);
@@ -236,7 +251,7 @@
     const p2sdWeightData = @json($bbp2sdData);
     const n1sdWeightData = @json($bbn1sdData);
     const p1sdWeightData = @json($bbp1sdData);
-    const weightBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'blue' : 'red' }}";
+    const weightBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'red' : 'red' }}";
     const weightOverlayColor = 'orange';
     const midColor = 'green';
 
@@ -295,6 +310,17 @@
                 borderColor: midColor,
                 borderWidth: 1,
                 order: 1
+            },
+            {
+                label: 'Berat Badan Pasien',
+                data: [{ x: Age, y: Weight }],
+                backgroundColor: 'blue',
+                borderColor: 'blue',
+                borderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                type: 'scatter',
+                showLine: false
             }
         ]
     };
@@ -307,7 +333,7 @@
             plugins: {
                 title: {
                     display: true,
-                    text: 'Weight to Age Chart'
+                    // text: 'Weight to Age Chart'
                 },
             },
             scales: {
@@ -315,14 +341,14 @@
                     display: true,
                     title: {
                         display: true,
-                        text: 'Age'
+                        text: 'Umur (bulan)'
                     }
                 },
                 y: {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Weight'
+                        text: 'Berat Badan (kg)'
                     }
                 }
             }
@@ -337,7 +363,7 @@
     const p2sdHeightData = @json($p2sdHeightData);
     const n1sdHeightData = @json($n1sdHeightData);
     const p1sdHeightData = @json($p1sdHeightData);
-    const heightBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'blue' : 'red' }}";
+    const heightBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'red' : 'red' }}";
     const heightOverlayColor = 'orange';
 
     const heightToAgeData = {
@@ -395,6 +421,17 @@
                 borderColor: midColor,
                 borderWidth: 1,
                 order: 1
+            },
+            {
+                label: 'Tinggi Badan Pasien',
+                data: [{ x: Age, y: Height }],
+                backgroundColor: 'blue',
+                borderColor: 'blue',
+                borderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                type: 'scatter',
+                showLine: false
             }
         ]
     };
@@ -407,7 +444,7 @@
             plugins: {
                 title: {
                     display: true,
-                    text: 'Height to Age Chart'
+                    // text: 'Height to Age Chart'
                 },
             },
             scales: {
@@ -415,19 +452,132 @@
                     display: true,
                     title: {
                         display: true,
-                        text: 'Age'
+                        text: 'Umur (bulan)'
                     }
                 },
                 y: {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Height'
+                        text: 'Tinggi Badan (cm)'
                     }
                 }
             }
         },
     };
+
+    // Weight To Height Chart
+    const weightToHeightLabels = @json($tbValues); // Ensure TB values are treated as strings
+    const n3sdWHData = @json($n3sdWeightData);
+    const p3sdWHData = @json($p3sdWeightData);
+    const n2sdWHData = @json($n2sdWeightData);
+    const p2sdWHData = @json($p2sdWeightData);
+    const n1sdWHData = @json($n1sdWeightData);
+    const p1sdWHData = @json($p1sdWeightData);
+    const WHBaseColor = "{{ $pasien->jenis_kelamin == 'laki-laki' ? 'red' : 'red' }}";
+    const WHOverlayColor = 'orange';
+
+    const weightToHeightData = {
+        labels: weightToHeightLabels,
+        datasets: [{
+                label: 'N3SD',
+                data: n3sdWHData,
+                fill: '+1',
+                backgroundColor: WHBaseColor,
+                borderColor: WHBaseColor,
+                borderWidth: 1,
+                order: 3
+            },
+            {
+                label: 'P3SD',
+                data: p3sdWHData,
+                fill: '-1',
+                backgroundColor: WHBaseColor,
+                borderColor: WHBaseColor,
+                borderWidth: 1,
+                order: 3
+            },
+            {
+                label: 'N2SD',
+                data: n2sdWHData,
+                fill: '+1',
+                backgroundColor: WHOverlayColor,
+                borderColor: WHOverlayColor,
+                borderWidth: 1,
+                order: 2
+            },
+            {
+                label: 'P2SD',
+                data: p2sdWHData,
+                fill: '-1',
+                backgroundColor: WHOverlayColor,
+                borderColor: WHOverlayColor,
+                borderWidth: 1,
+                order: 2
+            },
+            {
+                label: 'N1SD',
+                data: n1sdWHData,
+                fill: '+1',
+                backgroundColor: midColor,
+                borderColor: midColor,
+                borderWidth: 1,
+                order: 1
+            },
+            {
+                label: 'P1SD',
+                data: p1sdWHData,
+                fill: '-1',
+                backgroundColor: midColor,
+                borderColor: midColor,
+                borderWidth: 1,
+                order: 1
+            },
+            {
+                label: 'Berat Badan Pasien',
+                data: [{ x: Height, y: Weight }],
+                backgroundColor: 'blue',
+                borderColor: 'blue',
+                borderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                type: 'scatter',
+                showLine: false
+            }
+        ]
+    };
+
+    const weightToHeightConfig = {
+        type: 'line',
+        data: weightToHeightData,
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    // text: 'Berat Badan terhadap Tinggi Badan Chart'
+                },
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Tinggi Badan (cm)' // Label for the x-axis
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Berat Badan (kg)'
+                    }
+                }
+            }
+        },
+    };
+
 
     window.onload = function() {
         const weightCtx = document.getElementById('myChart').getContext('2d');
@@ -435,5 +585,8 @@
 
         const heightCtx = document.getElementById('heightToAgeChart').getContext('2d');
         new Chart(heightCtx, heightToAgeConfig);
+
+        const wHeightCtx = document.getElementById('weightToHeightChart').getContext('2d');
+        new Chart(wHeightCtx, weightToHeightConfig);
     };
 </script>
