@@ -12,31 +12,35 @@ class LocationSeeder extends Seeder
      */
     public function run()
     {
-        // Tambahkan data lokasi Surabaya
+        // Tambahkan data lokasi Baratajaya
         Location::create([
-            'name_location' => 'Surabaya',
-            'latitude' => -7.2575,
-            'longitude' => 112.7521,
-            'radius' => 31068.31, // Sesuaikan nilai radius dengan tipe data double
-            'value' => 55,
+            'name_location' => 'Kelurahan Baratajaya',
+            'value' => 3,
         ]);
-
-        // Tambahkan data lokasi Malang
+        // Tambahkan data lokasi Pucang Sewu
         Location::create([
-            'name_location' => 'Malang',
-            'latitude' => -7.9666,
-            'longitude' => 112.6326,
-            'radius' => 31068.31, // Sesuaikan nilai radius dengan tipe data double
-            'value' => 20,
+            'name_location' => 'Kelurahan Pucang Sewu',
+            'value' => 2,
         ]);
-
-        // Tambahkan data lokasi Sidoarjo
+        // Tambahkan data lokasi Kertajaya
         Location::create([
-            'name_location' => 'Sidoarjo',
-            'latitude' => -7.4478,
-            'longitude' => 112.7181,
-            'radius' => 31068.31, // Sesuaikan nilai radius dengan tipe data double
-            'value' => 5,
+            'name_location' => 'Kelurahan Kertajaya',
+            'value' => 1,
+        ]);
+        // Tambahkan data lokasi Gubeng
+        Location::create([
+            'name_location' => 'Kelurahan Gubeng',
+            'value' => 1,
+        ]);
+        // Tambahkan data lokasi Airlangga
+        Location::create([
+            'name_location' => 'Kelurahan Airlangga',
+            'value' => 3,
+        ]);
+        // Tambahkan data lokasi Mojo
+        Location::create([
+            'name_location' => 'Kelurahan Mojo',
+            'value' => 2,
         ]);
     }
 }

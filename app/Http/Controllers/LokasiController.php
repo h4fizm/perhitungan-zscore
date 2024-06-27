@@ -3,31 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
+use App\Models\Pasien;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
 
 class LokasiController extends Controller
 {
     public function index()
     {
         $locations = Location::all();
+        $stuntingLocations = [];
 
-        // Hitung nilai warna dan status berdasarkan kondisi yang telah ditentukan
         foreach ($locations as $location) {
-            if ($location->value > 50) {
-                $location->color = 'red';
-                $location->status = 'TINGGI';
-            } elseif ($location->value >= 10 && $location->value <= 50) {
-                $location->color = 'yellow';
-                $location->status = 'MENENGAH';
-            } else {
-                $location->color = 'green';
-                $location->status = 'RENDAH';
-            }
+            // Get the unique patients with the latest data for each NIK in the location
+            $uniquePatients = Pasien::whereIn('id', function ($query) use ($location) {
+                $query->select(DB::raw('MAX(id)'))
+                    ->from('pasien')
+                    ->where('id_location', $location->id)
+                    ->groupBy('nik');
+            })->get();
 
-            // Simpan jumlah pasien berdasarkan nilai dari kolom 'value'
-            $location->jumlah_pasien = $location->value;
+            // Calculate totals based on unique patients
+            $totalPasien = $uniquePatients->count();
+            $totalNormal = $uniquePatients->where('status_gizi', 'normal')->count();
+            $totalStunting = $uniquePatients->where('status_gizi', 'stunting')->count();
+            $totalObesitas = $uniquePatients->where('status_gizi', 'obesitas')->count();
+
+            // Determine the value category based on the counts of patients
+            $value = $this->calculateValue($totalNormal, $totalStunting, $totalObesitas);
+
+            // Update location value in the database
+            $location->update(['value' => $value]);
+
+            // Assign other data to location object
+            $location->jumlah_pasien = $totalPasien;
+            $location->jumlah_stunting = $totalStunting;
+            $location->jumlah_normal = $totalNormal;
+            $location->jumlah_obesitas = $totalObesitas;
+
+            // Collect locations with high stunting rates
+            if ($value == 1) {
+                $stuntingLocations[] = $location->name_location;
+            }
         }
+
+        // // Send email if there are locations with high stunting rates and the email hasn't been sent yet for this condition
+        // if (!empty($stuntingLocations)) {
+        //     $this->sendStuntingWarningEmailOnce($stuntingLocations);
+        // }
 
         return view('menu.pemetaan-lokasi', compact('locations'));
     }
@@ -35,86 +61,79 @@ class LokasiController extends Controller
     public function manajemen()
     {
         $locations = Location::all();
+        $stuntingLocations = [];
 
-        // Hitung nilai warna dan status berdasarkan kondisi yang telah ditentukan
         foreach ($locations as $location) {
-            if ($location->value > 50) {
-                $location->color = 'red';
-                $location->status = 'TINGGI';
-            } elseif ($location->value >= 10 && $location->value <= 50) {
-                $location->color = 'yellow';
-                $location->status = 'MENENGAH';
-            } else {
-                $location->color = 'green';
-                $location->status = 'RENDAH';
-            }
+            // Get the unique patients with the latest data for each NIK in the location
+            $uniquePatients = Pasien::whereIn('id', function ($query) use ($location) {
+                $query->select(DB::raw('MAX(id)'))
+                    ->from('pasien')
+                    ->where('id_location', $location->id)
+                    ->groupBy('nik');
+            })->get();
 
-            // Simpan jumlah pasien berdasarkan nilai dari kolom 'value'
-            $location->jumlah_pasien = $location->value;
+            // Calculate totals based on unique patients
+            $totalPasien = $uniquePatients->count();
+            $totalNormal = $uniquePatients->where('status_gizi', 'normal')->count();
+            $totalStunting = $uniquePatients->where('status_gizi', 'stunting')->count();
+            $totalObesitas = $uniquePatients->where('status_gizi', 'obesitas')->count();
+
+            // Determine the value category based on the counts of patients
+            $value = $this->calculateValue($totalNormal, $totalStunting, $totalObesitas);
+
+            // Update location value in the database
+            $location->update(['value' => $value]);
+
+            // Assign other data to location object
+            $location->jumlah_pasien = $totalPasien;
+            $location->jumlah_stunting = $totalStunting;
+            $location->jumlah_normal = $totalNormal;
+            $location->jumlah_obesitas = $totalObesitas;
+
+            // Collect locations with high stunting rates
+            if ($value == 1) {
+                $stuntingLocations[] = $location->name_location;
+            }
         }
+
+        // Send email if there are locations with high stunting rates and the email hasn't been sent yet for this condition
+        // if (!empty($stuntingLocations)) {
+        //     $this->sendStuntingWarningEmailOnce($stuntingLocations);
+        // }
 
         return view('menu.manajemen-lokasi', compact('locations'));
     }
 
-    public function create()
-    {
-        return view('menu.tambah-lokasi');
-    }
 
-    public function store(Request $request)
+    // New function to calculate the value based on counts of patients
+    private function calculateValue($totalNormal, $totalStunting, $totalObesitas)
     {
-        // Validasi data yang diterima dari form
-        $validatedData = $request->validate([
-            'name_location' => 'required|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'radius' => 'required|numeric',
-            // 'value' => 'required|integer',
-        ]);
-
-        // Jika 'value' tidak disertakan dalam request, atur nilainya menjadi 0
-        if (!$request->has('value')) {
-            $validatedData['value'] = 0;
+        if ($totalNormal > $totalStunting && $totalNormal > $totalObesitas) {
+            return 3; // Low
+        } elseif ($totalNormal == $totalStunting || $totalNormal == $totalObesitas) {
+            return 2; // Medium
+        } else {
+            return 1; // High
         }
-
-        // Buat lokasi baru berdasarkan data yang diterima
-        Location::create($validatedData);
-
-        // Redirect ke halaman manajemen lokasi setelah lokasi berhasil ditambahkan
-        return redirect()->back()->with('success', 'Lokasi berhasil ditambahkan.');
-    }
-    public function edit($id)
-    {
-        $location = Location::findOrFail($id);
-        return view('menu.edit-lokasi', compact('location'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $validatedData = $request->validate([
-            'name_location' => 'required|string',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'radius' => 'required|numeric',
-            // 'value' => 'required|integer',
-        ]);
+    // New function to send stunting warning email once based on latest condition
+    // private function sendStuntingWarningEmailOnce($stuntingLocations)
+    // {
+    //     $cacheKey = 'last_stunting_email_locations';
+    //     $lastStuntingEmailLocations = Cache::get($cacheKey, []);
 
-        if (!$request->has('value')) {
-            $validatedData['value'] = 0;
-        }
+    //     // Check if the current stunting locations are different from the last cached locations
+    //     if (array_diff($stuntingLocations, $lastStuntingEmailLocations) || array_diff($lastStuntingEmailLocations, $stuntingLocations)) {
+    //         $emailContent = "Yth. Bapak/Ibu,\n\nKami ingin memberitahukan bahwa jumlah pasien dengan status stunting telah mencapai tingkat yang tinggi di beberapa kelurahan. Berikut adalah daftar kelurahan yang memiliki status stunting tinggi:\n\n" . implode("\n", $stuntingLocations) . "\n\nKami sangat mengkhawatirkan kondisi ini dan berharap dapat segera mengambil tindakan yang diperlukan untuk menanggulangi masalah stunting di wilayah ini.\n\nTerima kasih atas perhatian dan kerjasamanya.\n\nSalam,\nTim Kesehatan";
 
-        Location::where('id', $id)->update($validatedData);
+    //         Mail::raw($emailContent, function ($message) {
+    //             $message->to('farelhafiz52@gmail.com')
+    //                 ->subject('Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
+    //         });
 
-        // Redirect ke halaman manajemen lokasi setelah lokasi berhasil ditambahkan
-        return redirect()->back()->with('success', 'Lokasi berhasil diedit.');
-    }
-    
-    public function destroy($id)
-    {
-        $location = Location::findOrFail($id);
-        $location->delete();
-
-        return redirect()->route('manajemen-lokasi')->with('success', 'Lokasi berhasil dihapus.');
-    }
-
+    //         // Update the last stunting email locations in cache
+    //         Cache::put($cacheKey, $stuntingLocations, now()->addDay()); // Cache for 1 day
+    //     }
+    // }
 }

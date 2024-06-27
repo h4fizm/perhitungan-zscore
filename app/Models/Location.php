@@ -11,10 +11,7 @@ class Location extends Model
 
     protected $fillable = [
         'name_location',
-        'latitude',
-        'longitude',
-        'radius',
-        'value', 
-        'created_at',// Tambahkan atribut value
+        'value',
+        'created_at',
     ];
 }

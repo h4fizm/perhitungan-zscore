@@ -12,9 +12,17 @@ class Pasien extends Model
     protected $table = 'pasien';
 
     protected $fillable = [
-        'nik', 'nama', 'alamat', 'tanggal_lahir',
-        'jenis_kelamin', 'id_location', 'tanggal_pengukuran',
-        'umur', 'berat_badan', 'tinggi_badan', 'status_gizi',
+        'nik',
+        'nama',
+        'alamat',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'id_location',
+        'tanggal_pengukuran',
+        'umur',
+        'berat_badan',
+        'tinggi_badan',
+        'status_gizi',
         'status_tinggi'
     ];
 

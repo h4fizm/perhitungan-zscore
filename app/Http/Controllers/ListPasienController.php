@@ -11,6 +11,32 @@ use App\Models\Location;
 
 class ListPasienController extends Controller
 {
+    public function lokasipasien($id)
+    {
+        // Mendapatkan data lokasi
+        $location = Location::findOrFail($id);
+
+        // Subquery untuk mendapatkan data terbaru dari setiap nik
+        $subquery = DB::table('pasien as p1')
+            ->select('p1.nik', DB::raw('MAX(p1.created_at) as max_created_at'))
+            ->groupBy('p1.nik');
+
+        // Join subquery dengan tabel pasien untuk mendapatkan data terbaru per nik dan filter berdasarkan lokasi
+        $pasien = Pasien::joinSub($subquery, 'latest', function ($join) {
+            $join->on('pasien.nik', '=', 'latest.nik')
+                ->on('pasien.created_at', '=', 'latest.max_created_at');
+        })
+            ->where('pasien.id_location', $id)
+            ->orderByDesc('latest.max_created_at') // Urutkan berdasarkan created_at terbaru
+            ->paginate(5); // Menambahkan pagination dengan 5 data per halaman
+
+        // Mengambil status gizi dari pengukuran terbaru secara global
+        $latest_measurement = Pasien::latest('created_at')->first();
+        $latest_status = $latest_measurement ? $latest_measurement->status_gizi : 'Belum ada pengukuran';
+
+        return view("menu.manajemen-pasien-lokasi", compact('pasien', 'latest_status', 'location'));
+    }
+
     public function index()
     {
         // Subquery untuk mendapatkan data terbaru dari setiap nik
@@ -24,7 +50,7 @@ class ListPasienController extends Controller
                 ->on('pasien.created_at', '=', 'latest.max_created_at');
         })
             ->orderByDesc('latest.max_created_at') // Urutkan berdasarkan created_at terbaru
-            ->get();
+            ->paginate(5); // Menambahkan pagination dengan 5 data per halaman
 
         // Mengambil status gizi dari pengukuran terbaru secara global
         $latest_measurement = Pasien::latest('created_at')->first();
@@ -80,12 +106,11 @@ class ListPasienController extends Controller
         $faskes = Location::pluck('name_location', 'id')->toArray();
         return view('menu.edit-pasien', compact('pasien', 'jenis_kelamin', 'faskes'));
     }
-
     public function update(Request $request, $id)
     {
         $pasien = Pasien::findOrFail($id);
-    
-        // Jika nilai nik tidak berubah, hilangkan validasi unik untuk nik
+
+        // Validasi data berdasarkan perubahan nik
         if ($pasien->nik === $request->nik) {
             $request->validate([
                 'nik' => 'required|digits:16',
@@ -105,25 +130,39 @@ class ListPasienController extends Controller
                 'faskes' => 'required',
             ]);
         }
-    
+
         // Hitung umur dari tanggal lahir yang diberikan
         $tanggal_lahir = Carbon::parse($request->tanggal_lahir);
         $umur = $tanggal_lahir->diffInMonths(Carbon::now());
-    
-        // Perbarui semua data pasien dengan nik yang sama
-        Pasien::where('nik', $pasien->nik)->update([
-            'nik' => $request->nik,
-            'nama' => $request->nama,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'umur' => $umur,
-            'alamat' => $request->alamat,
-            'id_location' => $request->faskes,
-        ]);
-    
+
+        // Logika update data pasien
+        if ($pasien->nik === $request->nik) {
+            // Jika NIK tidak berubah, update semua entri dengan NIK yang sama
+            Pasien::where('nik', $pasien->nik)->update([
+                'nama' => $request->nama,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'umur' => $umur,
+                'alamat' => $request->alamat,
+                'id_location' => $request->faskes,
+            ]);
+        } else {
+            // Jika NIK berubah, update semua entri dengan NIK yang sama (NIK lama)
+            Pasien::where('nik', $pasien->nik)->update([
+                'nik' => $request->nik,
+                'nama' => $request->nama,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'umur' => $umur,
+                'alamat' => $request->alamat,
+                'id_location' => $request->faskes,
+            ]);
+        }
+
         return Redirect::route('edit-pasien', $pasien->id)->with('success', 'Data pasien berhasil diperbarui');
     }
-    
+
+
 
     public function destroy($id)
     {

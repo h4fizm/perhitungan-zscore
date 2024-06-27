@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Fungsi Menu Manajemen Pasien
     Route::get('/list-pasien', [ListPasienController::class, 'index'])->name('list-pasien');
+    // Fungsi Menu Manajemen Pasien
+    Route::get('/list-pasien/{id}', [ListPasienController::class, 'lokasipasien'])->name('list-pasien-lokasi');
     // Fungsi Tambah Data Pasien  
     Route::get('/tambah-pasien', [ListPasienController::class, 'tambah'])->name('tambah-pasien');
     // Route untuk menyimpan data pasien
