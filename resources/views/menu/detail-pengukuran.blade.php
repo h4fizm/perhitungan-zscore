@@ -79,11 +79,11 @@
                     </div>
                 </div>
             </div>
-            {{-- <p>{{ $ZScoreWeight }}</p>
+            <p>{{ $ZScoreWeight }}</p>
             <p>{{ $ZScoreHeight }}</p>
             <p>Z Score untuk Berat Badan Menurut Tinggi Badan</p>
             <p>{{ $ZScoreWH }}</p>
-            <p>ini ada</p> --}}
+            <p>ini ada</p>
 
             {{-- Grafik kedua --}}
             <div class="col-lg-12 mb-4">

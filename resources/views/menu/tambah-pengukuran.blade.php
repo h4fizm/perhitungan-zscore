@@ -59,7 +59,7 @@
                                 </div>
                             </div>
                             {{-- Button Kembali --}}
-                            <a href="{{ route('list-pasien')}}" class="btn btn-secondary btn-sm" id="btnKembali">Kembali</a>
+                            <a href="{{ route('detail-pengukuran', ['id' => $id]) }}" class="btn btn-secondary btn-sm" id="btnKembali">Kembali</a>
                             <button type="submit" class="btn btn-primary btn-sm float-end">Simpan</button>
                         </form>
                 </div>

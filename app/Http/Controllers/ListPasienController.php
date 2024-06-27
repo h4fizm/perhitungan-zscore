@@ -84,7 +84,7 @@ class ListPasienController extends Controller
     public function update(Request $request, $id)
     {
         $pasien = Pasien::findOrFail($id);
-
+    
         // Jika nilai nik tidak berubah, hilangkan validasi unik untuk nik
         if ($pasien->nik === $request->nik) {
             $request->validate([
@@ -105,11 +105,11 @@ class ListPasienController extends Controller
                 'faskes' => 'required',
             ]);
         }
-
+    
         // Hitung umur dari tanggal lahir yang diberikan
         $tanggal_lahir = Carbon::parse($request->tanggal_lahir);
         $umur = $tanggal_lahir->diffInMonths(Carbon::now());
-
+    
         // Perbarui semua data pasien dengan nik yang sama
         Pasien::where('nik', $pasien->nik)->update([
             'nik' => $request->nik,
@@ -120,10 +120,10 @@ class ListPasienController extends Controller
             'alamat' => $request->alamat,
             'id_location' => $request->faskes,
         ]);
-
+    
         return Redirect::route('edit-pasien', $pasien->id)->with('success', 'Data pasien berhasil diperbarui');
     }
-
+    
 
     public function destroy($id)
     {
