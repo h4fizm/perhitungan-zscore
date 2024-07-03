@@ -76,13 +76,13 @@
         <div class="col-md-4">
             <div class="card card-profile">
                 {{-- Gambar Background --}}
-                <img src="{{ asset('style/assets/img/bg-profile.jpg') }}" alt="Image placeholder" class="card-img-top">
+                <img src="{{ asset('style/assets/img/carousel-1.jpg') }}" alt="Image placeholder" class="card-img-top">
                 <div class="row justify-content-center">
                     <div class="col-4 col-lg-4 order-lg-2">
                         <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
                             <a href="javascript:;">
                                 {{-- Gambar Profil --}}
-                                <img src="{{ asset('style/assets/img/team-2.jpg') }}" class="rounded-circle img-fluid border border-2 border-white">
+                                <img src="{{ asset('style/assets/img/user_logo.jpg') }}" class="rounded-circle img-fluid border border-2 border-black">
                             </a>
                         </div>
                     </div>
