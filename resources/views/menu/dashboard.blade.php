@@ -9,7 +9,7 @@
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-start align-items-center mt-3">
                         <div>
-                            <img src="{{ asset('style/assets/img/Antromaps.png') }}" alt="Logo" style="width: 60px; height: 60px; margin-right:10px">
+                            <img src="{{ asset('style/assets/img/Logo.png') }}" alt="Logo" style="width: 60px; height: 60px; margin-right:10px">
                         </div>
                         <div>
                             <h4><strong>Politeknik Kesehatan Kemenkes Surabaya</strong></h4>

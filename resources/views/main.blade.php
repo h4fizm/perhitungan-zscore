@@ -9,7 +9,7 @@
     @yield('title')
   </title>
   {{-- Favicon --}}
-  <link rel="icon" type="image/x-icon" href="{{ asset('style/assets/img/Antromaps.png') }}">
+  <link rel="icon" type="image/x-icon" href="{{ asset('style/assets/img/Favicon.png') }}">
   <!-- Fonts and icons -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
   <!-- Nucleo Icons -->
