@@ -45,9 +45,10 @@
                                           <i class="bi bi-person-circle avatar avatar-sm bg-gradient-primary me-3"></i>
                                       </div>
                                       <div class="d-flex flex-column justify-content-center">
-                                          <h6 class="text-sm font-weight-normal mb-1">
-                                              <span class="font-weight-bold">Profil</span>
-                                          </h6>
+                                        <h6 class="text-sm font-weight-normal mb-1">
+                                                <span class="font-weight-bold" style="color: black;">Profil</span>
+                                            </h6>
+
                                           <p class="text-xs text-secondary mb-0">
                                               Laman User Profil
                                           </p>
@@ -68,7 +69,7 @@
                                       </div>
                                       <div class="d-flex flex-column justify-content-center">
                                           <h6 class="text-sm font-weight-normal mb-1">
-                                              <span class="font-weight-bold">Logout</span>
+                                              <span class="font-weight-bold" style="color: black;">Logout</span>
                                           </h6>
                                           <p class="text-xs text-secondary mb-0">
                                               Laman Login

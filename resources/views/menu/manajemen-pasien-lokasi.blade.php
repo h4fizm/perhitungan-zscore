@@ -59,61 +59,50 @@
                                             Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @if ($pasien->isNotEmpty())
-                                        @foreach ($pasien as $data)
-                                            <tr>
-                                                <td
-                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    {{ $data->nik }}</td>
-                                                <td class="text-secondary font-weight-bold text-xs">{{ $data->nama }}</td>
-                                                <td
-                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    @if ($data->jenis_kelamin == 'laki-laki')
-                                                        <span class="badge bg-primary">Laki-laki</span>
-                                                    @else
-                                                        <span class="badge bg-danger">Perempuan</span>
-                                                    @endif
-                                                </td>
-                                                <td
-                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    {{ $data->umur }} Bulan</td>
-                                                <td
-                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    {{ $data->location->name_location }}</td>
-                                                <td
-                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                    XXXX</td>
-                                                <td class="align-middle text-center">
+                                    <tbody>
+                                        @if ($pasien->isNotEmpty())
+                                            @foreach ($pasien as $data)
+                                                <tr>
+                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $data->nik }}</td>
+                                                    <td class="text-secondary font-weight-bold text-xs">{{ $data->nama }}</td>
+                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        @if ($data->jenis_kelamin == 'laki-laki')
+                                                            <span class="badge bg-primary">Laki-laki</span>
+                                                        @else
+                                                            <span class="badge bg-danger">Perempuan</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $data->umur }} Bulan</td>
+                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $data->location->name_location }}</td>
+                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        XXXXXX</td> <!-- Menampilkan status gizi terbaru -->
+                                                    <td class="align-middle text-center">
                                                         <div class="d-inline-flex flex-column align-items-center">
-                                                            <a href="{{ route('detail-pengukuran', $data->id) }}"
-                                                            class="btn btn-info btn-sm mb-2"
-                                                            style="width: 100px; padding: 5px;" data-toggle="tooltip"
-                                                            data-original-title="Info user">INFO</a>
-                                                            <a href="{{ route('edit-pasien', $data->id) }}"
-                                                            class="btn btn-warning btn-sm mb-2"
-                                                            style="width: 100px; padding: 5px;" data-toggle="tooltip"
-                                                            data-original-title="Edit user">EDIT</a>
-                                                            <form id="delete-form-{{ $data->id }}"
-                                                                action="{{ route('list-pasien.destroy', $data->id) }}"
+                                                            <a href="{{ route('detail-pengukuran', $data->id) }}" class="btn btn-info btn-sm mb-2"
+                                                                style="width: 100px; padding: 5px;" data-toggle="tooltip" data-original-title="Info user">INFO</a>
+                                                            <a href="{{ route('edit-pasien', $data->id) }}" class="btn btn-warning btn-sm mb-2"
+                                                                style="width: 100px; padding: 5px;" data-toggle="tooltip" data-original-title="Edit user">EDIT</a>
+                                                            <form id="delete-form-{{ $data->id }}" action="{{ route('list-pasien.destroy', $data->id) }}"
                                                                 method="POST">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="button" class="btn btn-danger btn-sm delete-btn"
-                                                                        style="width: 100px; padding: 5px;"
+                                                                <button type="button" class="btn btn-danger btn-sm delete-btn" style="width: 100px; padding: 5px;"
                                                                         data-user-id="{{ $data->id }}">HAPUS</button>
                                                             </form>
                                                         </div>
                                                     </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="7" class="text-center text-secondary font-weight-bold text-xs">
+                                                    Tidak ada data pasien pada lokasi yang dipilih</td>
                                             </tr>
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="7" class="text-center text-secondary font-weight-bold text-xs">
-                                                Tidak ada data pasien pada lokasi yang dipilih</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
+                                        @endif
+                                    </tbody>
                             </table>
                         </div>
                     </div>

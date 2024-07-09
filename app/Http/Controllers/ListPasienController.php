@@ -52,12 +52,9 @@ class ListPasienController extends Controller
             ->orderByDesc('latest.max_created_at') // Urutkan berdasarkan created_at terbaru
             ->paginate(5); // Menambahkan pagination dengan 5 data per halaman
 
-        // Mengambil status gizi dari pengukuran terbaru secara global
-        $latest_measurement = Pasien::latest('created_at')->first();
-        $latest_status = $latest_measurement ? $latest_measurement->status_gizi : 'Belum ada pengukuran';
-
-        return view("menu.manajemen-pasien", compact('pasien', 'latest_status'));
+        return view("menu.manajemen-pasien", compact('pasien'));
     }
+
 
     public function tambah()
     {
