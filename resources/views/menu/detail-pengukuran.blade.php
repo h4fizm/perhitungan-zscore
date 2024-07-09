@@ -79,11 +79,11 @@
                     </div>
                 </div>
             </div>
-            {{-- <p>{{ $ZScoreWeight }}</p>
+            <p>{{ $ZScoreWeight }}</p>
             <p>{{ $ZScoreHeight }}</p>
             <p>Z Score untuk Berat Badan Menurut Tinggi Badan</p>
             <p>{{ $ZScoreWH }}</p>
-            <p>ini ada</p> --}}
+            <p>ini ada</p>
 
             {{-- Grafik kedua --}}
             <div class="col-lg-12 mb-4">
@@ -169,9 +169,9 @@
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                 {{ $measurement->tinggi_badan }}</td>
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $measurement->status_gizi }}</td>
+                                                {{ $statusGizi  }}</td>
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $measurement->status_tinggi }}</td>
+                                                {{ $statusTinggi }}</td>
                                             <td class="align-middle text-center">
                                                 <div class="d-inline-flex flex-column align-items-center">
                                                     @if ($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
@@ -243,6 +243,14 @@
     const Height = @json($height);
     const Age = @json($pasien->umur);
 
+    const measurementData = @json($measurements);
+
+    // Create arrays for all measurement points
+    const weightToAgePoints = measurementData.map(measurement => ({ x: measurement.umur, y: measurement.berat_badan }));
+    const heightToAgePoints = measurementData.map(measurement => ({ x: measurement.umur, y: measurement.tinggi_badan }));
+    const weightToHeightPoints = measurementData.map(measurement => ({ x: measurement.tinggi_badan, y: measurement.berat_badan })).sort((a, b) => a.x - b.x).slice(1);
+
+
     // Weight to Age Chart
     const weightToAgeLabels = @json($bblabels);
     const n3sdWeightData = @json($bbn3sdData);
@@ -312,15 +320,17 @@
                 order: 1
             },
             {
-                label: 'Berat Badan Pasien',
-                data: [{ x: Age, y: Weight }],
+                label: 'Berat Badan Pasien terhadap umur',
+                // data: [{ x: Age, y: Weight }],
+                data: weightToAgePoints,
                 backgroundColor: 'blue',
                 borderColor: 'blue',
                 borderWidth: 2,
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                type: 'scatter',
-                showLine: false
+                type: 'line',
+                fill: false,
+                tension: 0.1 
             }
         ]
     };
@@ -423,16 +433,19 @@
                 order: 1
             },
             {
-                label: 'Tinggi Badan Pasien',
-                data: [{ x: Age, y: Height }],
+                label: 'Tinggi Badan Pasien Terhadap umur',
+                // data: [{ x: Age, y: Height }],
+                data: heightToAgePoints,
                 backgroundColor: 'blue',
                 borderColor: 'blue',
                 borderWidth: 2,
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                type: 'scatter',
-                showLine: false
+                type: 'line',
+                fill: false,
+                tension: 0.1                
             }
+
         ]
     };
 
@@ -534,15 +547,16 @@
                 order: 1
             },
             {
-                label: 'Berat Badan Pasien',
-                data: [{ x: Height, y: Weight }],
+                label: 'Berat Badan Terhadap Tinggi Badan Pasien',
+                data: weightToHeightPoints,
                 backgroundColor: 'blue',
                 borderColor: 'blue',
                 borderWidth: 2,
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                type: 'scatter',
-                showLine: false
+                type: 'line',
+                fill: false,
+                tension: 0.1
             }
         ]
     };
