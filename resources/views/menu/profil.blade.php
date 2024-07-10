@@ -56,15 +56,6 @@
                                     <input id="password_confirmation" name="password_confirmation" class="form-control" type="password" placeholder="Masukkan kembali kata sandi Anda">
                                 </div>
                             </div>
-                           <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="role" class="form-control-label">Role User</label>
-                                    <select id="role" name="role" class="form-control">
-                                        <option value="admin" {{ (auth()->user()->role == 'admin') ? 'selected' : '' }}>Admin</option>
-                                        <option value="guest" {{ (auth()->user()->role == 'guest') ? 'selected' : '' }}>Guest</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                         {{-- Button Edit --}}
                         <button type="submit" class="btn btn-warning btn-sm float-end">Simpan Perubahan</button>

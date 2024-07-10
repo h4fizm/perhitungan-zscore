@@ -15,11 +15,18 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="{{ route('manajemen-lokasi') }}">Daftar Kelurahan</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('list-pasien') }}">Daftar Pasien</a></li>
+                        <li class="breadcrumb-item">
+                            @if (auth()->user()->role != 'Guest')
+                                <a href="{{ route('list-pasien') }}">Daftar Pasien</a>
+                            @else
+                                Daftar Pasien
+                            @endif
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">{{ $location->name_location }}</li>
                     </ol>
                 </nav>
             </div>
+
         </div>
 
         <div class="row">
@@ -28,7 +35,9 @@
                     <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">
                             <h6>Daftar Pasien di {{ $location->name_location }}</h6>
+                            @if (auth()->user()->role != 'Guest')
                             <a href="{{ route('tambah-pasien') }}" class="btn btn-primary"> + Tambah Pasien</a>
+                            @endif
                         </div>
                     </div>
                     <div class="card-body px-0 pt-0 pb-2">
@@ -54,9 +63,11 @@
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Status Pasien</th>
+                                         @if (auth()->user()->role != 'Guest')
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Aksi</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                     <tbody>
@@ -79,6 +90,7 @@
                                                         {{ $data->location->name_location }}</td>
                                                     <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                         XXXXXX</td> <!-- Menampilkan status gizi terbaru -->
+                                                     @if (auth()->user()->role != 'Guest')
                                                     <td class="align-middle text-center">
                                                         <div class="d-inline-flex flex-column align-items-center">
                                                             <a href="{{ route('detail-pengukuran', $data->id) }}" class="btn btn-info btn-sm mb-2"
@@ -94,6 +106,7 @@
                                                             </form>
                                                         </div>
                                                     </td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @else

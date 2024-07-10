@@ -40,6 +40,7 @@
             <span class="nav-link-text ms-1">Manajemen Lokasi</span>
           </a>
         </li>
+        @if (auth()->user()->role != 'Guest')
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Menu Informasi Pasien</h6>
         </li>
@@ -52,6 +53,7 @@
             <span class="nav-link-text ms-1">Daftar Pasien</span>
           </a>
         </li>
+        @endif
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Pengaturan Akun</h6>
         </li>
@@ -65,6 +67,7 @@
           </a>
         </li>
         {{-- Laman Manajemen Role User --}}
+        @if (auth()->user()->role != 'Guest' && auth()->user()->role != 'Operator')
         <li class="nav-item">
            <a class="nav-link {{ request()->is('list-user') ? 'active' : '' }}" href="{{ route('list-user') }}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -73,6 +76,7 @@
             <span class="nav-link-text ms-1">Manajemen Role User</span>
           </a>
         </li>
+        @endif
       </ul>
     </div>
     <div class="sidenav-footer mx-3 ">

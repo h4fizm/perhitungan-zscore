@@ -61,8 +61,9 @@
                                 <div class="form-group">
                                     <label for="role" class="form-control-label">Role User</label>
                                     <select id="role" name="role" class="form-control">
-                                        <option value="admin" {{ ($user->role == 'admin') ? 'selected' : '' }}>Admin</option>
-                                        <option value="guest" {{ ($user->role == 'guest') ? 'selected' : '' }}>Guest</option>
+                                        <option value="Admin" {{ ($user->role == 'Admin') ? 'selected' : '' }}>Admin</option>
+                                        <option value="Guest" {{ ($user->role == 'Guest') ? 'selected' : '' }}>Guest</option>
+                                        <option value="Operator" {{ ($user->role == 'Operator') ? 'selected' : '' }}>Operator</option>
                                     </select>
                                 </div>
                             </div>
@@ -76,32 +77,32 @@
             </div>
         </div>
         {{-- Informasi User Sebelah Kanan --}}
-        <div class="col-md-4">
+         <div class="col-md-4">
             <div class="card card-profile">
                 {{-- Gambar Background --}}
-                <img src="{{ asset('style/assets/img/bg-profile.jpg') }}" alt="Image placeholder" class="card-img-top">
+                <img src="{{ asset('style/assets/img/carousel-1.jpg') }}" alt="Image placeholder" class="card-img-top">
                 <div class="row justify-content-center">
                     <div class="col-4 col-lg-4 order-lg-2">
                         <div class="mt-n4 mt-lg-n6 mb-4 mb-lg-0">
                             <a href="javascript:;">
                                 {{-- Gambar Profil --}}
-                                <img src="{{ asset('style/assets/img/team-2.jpg') }}" class="rounded-circle img-fluid border border-2 border-white">
+                                <img src="{{ asset('style/assets/img/user_logo.jpg') }}" class="rounded-circle img-fluid border border-2 border-black">
                             </a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
-                    <div class="text-center mt-4">
-                        <h5>
-                            {{ $user->name }}<span class="font-weight-light"></span>
-                        </h5>
-                        <div class="h6 font-weight-300">
-                            <i class="ni location_pin mr-2">
-                                {{ $user->role }}
-                            </i>
-                        </div>
+                <div class="text-center mt-4">
+                    <h5>
+                        {{ $user->name }}<span class="font-weight-light"></span>
+                    </h5>
+                    <div class="h6 font-weight-300">
+                        <i class="ni location_pin mr-2">
+                            {{ $user->role }}
+                        </i>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     </div>

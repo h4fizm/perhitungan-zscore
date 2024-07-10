@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
@@ -20,7 +19,7 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'Admin',
             'email' => 'admin@admin.com',
-            'role' => 'Admin', // Ubah peran ke 'super-admin'
+            'role' => 'Admin',
             'email_verified_at' => now(),
             'password' => bcrypt('password'), // Menggunakan bcrypt() untuk mengenkripsi kata sandi
             'remember_token' => Str::random(10),
@@ -31,7 +30,18 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'Guest',
             'email' => 'guest@guest.com',
-            'role' => 'Guest', // Ubah peran ke 'super-admin'
+            'role' => 'Guest',
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'), // Menggunakan bcrypt() untuk mengenkripsi kata sandi
+            'remember_token' => Str::random(10),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Operator',
+            'email' => 'operator@operator.com',
+            'role' => 'Operator',
             'email_verified_at' => now(),
             'password' => bcrypt('password'), // Menggunakan bcrypt() untuk mengenkripsi kata sandi
             'remember_token' => Str::random(10),
