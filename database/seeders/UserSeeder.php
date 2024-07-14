@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
             'role' => 'Admin',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'location_id' => null, // location_id dikosongkan untuk Admin
+            'id_location' => null, // location_id dikosongkan untuk Admin
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             'role' => 'Guest',
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
-            'location_id' => null, // location_id dikosongkan untuk Guest
+            'id_location' => null, // location_id dikosongkan untuk Guest
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
