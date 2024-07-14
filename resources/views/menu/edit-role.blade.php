@@ -1,4 +1,3 @@
-{{-- MAIN SECTION --}}
 @extends('main')
 @section('title', 'Laman Edit Profil')
 @section('content')
@@ -60,16 +59,26 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="role" class="form-control-label">Role User</label>
-                                    <select id="role" name="role" class="form-control">
+                                    <select id="role" name="role" class="form-control" onchange="togglePuskesmasField()">
                                         <option value="Admin" {{ ($user->role == 'Admin') ? 'selected' : '' }}>Admin</option>
                                         <option value="Guest" {{ ($user->role == 'Guest') ? 'selected' : '' }}>Guest</option>
                                         <option value="Operator" {{ ($user->role == 'Operator') ? 'selected' : '' }}>Operator</option>
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-6" id="puskesmas-field" style="display:{{ ($user->role == 'Operator') ? 'block' : 'none' }};">
+                                <div class="form-group">
+                                    <label for="id_location" class="form-control-label">Pilihan Puskesmas</label>
+                                    <select id="id_location" name="id_location" class="form-control">
+                                        @foreach($locations as $location)
+                                            <option value="{{ $location->id }}" {{ ($user->id_location == $location->id) ? 'selected' : '' }}>{{ $location->name_location }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         {{-- Button Kembali --}}
-                         <a href="{{ route('list-user') }}" class="btn btn-secondary btn-sm">Kembali</a>
+                        <a href="{{ route('list-user') }}" class="btn btn-secondary btn-sm">Kembali</a>
                         {{-- Button Edit --}}
                         <button type="submit" class="btn btn-warning btn-sm float-end">Simpan Perubahan</button>
                     </form>
@@ -77,7 +86,7 @@
             </div>
         </div>
         {{-- Informasi User Sebelah Kanan --}}
-         <div class="col-md-4">
+        <div class="col-md-4">
             <div class="card card-profile">
                 {{-- Gambar Background --}}
                 <img src="{{ asset('style/assets/img/carousel-1.jpg') }}" alt="Image placeholder" class="card-img-top">
@@ -92,19 +101,31 @@
                     </div>
                 </div>
                 <div class="card-body pt-0">
-                <div class="text-center mt-4">
-                    <h5>
-                        {{ $user->name }}<span class="font-weight-light"></span>
-                    </h5>
-                    <div class="h6 font-weight-300">
-                        <i class="ni location_pin mr-2">
-                            {{ $user->role }}
-                        </i>
+                    <div class="text-center mt-4">
+                        <h5>
+                            {{ $user->name }}<span class="font-weight-light"></span>
+                        </h5>
+                        <div class="h6 font-weight-300">
+                            <i class="ni location_pin mr-2">
+                                {{ $user->role }}
+                            </i>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function togglePuskesmasField() {
+    var role = document.getElementById('role').value;
+    var puskesmasField = document.getElementById('puskesmas-field');
+    if (role === 'Operator') {
+        puskesmasField.style.display = 'block';
+    } else {
+        puskesmasField.style.display = 'none';
+    }
+}
+</script>
 @endsection

@@ -14,4 +14,8 @@ class Location extends Model
         'value',
         'created_at',
     ];
+    public function users()
+    {
+        return $this->hasMany(User::class, 'id_location');
+    }
 }

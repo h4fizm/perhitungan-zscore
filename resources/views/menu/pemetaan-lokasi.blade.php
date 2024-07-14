@@ -34,7 +34,7 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Fungsi untuk membuat konten pop-up
+      // Fungsi untuk membuat konten pop-up
         function createPopupContent(name, id) {
             var totalPasien = 0;
             var totalStunting = 0;
@@ -50,15 +50,21 @@
                 }
             @endforeach
 
+            var buttonHTML = '';
+            @if (auth()->user()->role != 'Operator')
+                buttonHTML = `<button class="btn btn-primary" onclick="showDetails(${id})">Informasi Pasien</button>`;
+            @endif
+
             return `<div class="popup-content">
-            <div style="margin-bottom: 15px; font-size: 16px; font-weight: bold;">${name}</div>
-            <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Total Pasien : ${totalPasien}</div>
-            <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Stunting : ${totalStunting}</div>
-            <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Normal : ${totalNormal}</div>
-            <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Obesitas : ${totalObesitas}</div>
-            <button class="btn btn-primary" onclick="showDetails(${id})">Informasi Pasien</button>
-        </div>`;
+                <div style="margin-bottom: 15px; font-size: 16px; font-weight: bold;">${name}</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Total Pasien : ${totalPasien}</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Stunting : ${totalStunting}</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Normal : ${totalNormal}</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Obesitas : ${totalObesitas}</div>
+                ${buttonHTML}
+            </div>`;
         }
+
 
         // Fungsi untuk mengarahkan ke laman kelurahan yang dipilih
         function showDetails(id) {

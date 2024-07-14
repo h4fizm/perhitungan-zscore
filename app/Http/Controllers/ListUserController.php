@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\Location; // Tambahkan ini
 
 class ListUserController extends Controller
 {
@@ -16,7 +17,8 @@ class ListUserController extends Controller
 
     public function create()
     {
-        return view('menu.tambah-role');
+        $locations = Location::all(); // Ambil semua data puskesmas
+        return view('menu.tambah-role', compact('locations'));
     }
 
     public function store(Request $request)
@@ -26,6 +28,7 @@ class ListUserController extends Controller
             'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|string|min:5|confirmed',
             'role' => 'required|string|in:Admin,Guest,Operator',
+            'id_location' => 'required_if:role,Operator|exists:locations,id', // Validasi hanya jika role adalah Operator
         ]);
 
         $user = new User();
@@ -33,16 +36,18 @@ class ListUserController extends Controller
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
         $user->role = $request->input('role');
+        $user->id_location = $request->input('id_location'); // Tambahkan ini
         $user->save();
 
         return redirect()->route('list-user.create')->with('success', 'User berhasil ditambahkan.');
     }
+
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('menu.edit-role', compact('user'));
+        $locations = Location::all(); // Ambil semua data puskesmas
+        return view('menu.edit-role', compact('user', 'locations'));
     }
-
 
     public function update(Request $request, $id)
     {
@@ -56,6 +61,7 @@ class ListUserController extends Controller
             ],
             'password' => 'nullable|string|min:5|confirmed',
             'role' => 'required|string|in:Admin,Guest,Operator',
+            'id_location' => 'required_if:role,Operator|exists:locations,id', // Validasi hanya jika role adalah Operator
         ]);
 
         $user = User::findOrFail($id);
@@ -65,10 +71,12 @@ class ListUserController extends Controller
             $user->password = bcrypt($request->input('password'));
         }
         $user->role = $request->input('role');
+        $user->id_location = $request->input('id_location'); // Tambahkan ini
         $user->save();
 
         return redirect()->route('list-user.edit', $user->id)->with('success', 'User berhasil diperbarui.');
     }
+
 
     public function destroy($id)
     {

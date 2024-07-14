@@ -36,9 +36,11 @@
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Status</th>
+                                        @if (auth()->user()->role != 'Operator')
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Aksi</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -66,7 +68,7 @@
                                                     <span class="badge bg-gradient-danger">TINGGI</span>
                                                 @endif
                                             </td>
-
+                                            @if (auth()->user()->role != 'Operator')
                                             <td class="align-middle text-center">
                                                 <div class="d-inline-flex">
                                                     <a href="{{ route('list-pasien-lokasi', ['id' => $location->id]) }}" class="badge bg-gradient-primary me-1"
@@ -74,6 +76,7 @@
                                                         Pasien</a>
                                                 </div>
                                             </td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>

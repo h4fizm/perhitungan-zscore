@@ -50,7 +50,6 @@ Route::middleware(['auth'])->group(function () {
     // Delete Lokasi
     Route::delete('/lokasi/{id}', [LokasiController::class, 'destroy'])->name('lokasi.destroy');
 
-
     // Fungsi Menu Manajemen Pasien
     Route::get('/list-pasien', [ListPasienController::class, 'index'])->name('list-pasien');
     // Fungsi Menu Manajemen Pasien
@@ -76,8 +75,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/edit-pengukuran/{id}', [PasienController::class, 'update'])->name('update-pengukuran');
     // Hapus Data 
     Route::delete('/delete-pengukuran/{id}', [PasienController::class, 'delete'])->name('delete-pengukuran');
-
-
 
     // Fungsi Menu Profil
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
