@@ -15,13 +15,13 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        // Contoh pengisian data
         DB::table('users')->insert([
             'name' => 'Admin',
             'email' => 'admin@admin.com',
             'role' => 'Admin',
             'email_verified_at' => now(),
-            'password' => bcrypt('password'), // Menggunakan bcrypt() untuk mengenkripsi kata sandi
+            'password' => bcrypt('password'),
+            'id_location' => null, // location_id dikosongkan untuk Admin
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
@@ -32,7 +32,8 @@ class UserSeeder extends Seeder
             'email' => 'guest@guest.com',
             'role' => 'Guest',
             'email_verified_at' => now(),
-            'password' => bcrypt('password'), // Menggunakan bcrypt() untuk mengenkripsi kata sandi
+            'password' => bcrypt('password'),
+            'id_location' => null, // location_id dikosongkan untuk Guest
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
@@ -43,12 +44,11 @@ class UserSeeder extends Seeder
             'email' => 'operator@operator.com',
             'role' => 'Operator',
             'email_verified_at' => now(),
-            'password' => bcrypt('password'), // Menggunakan bcrypt() untuk mengenkripsi kata sandi
+            'password' => bcrypt('password'),
+            'id_location' => 1, // Pastikan ID lokasi sudah ada di tabel locations
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        // Jika Anda ingin membuat lebih banyak contoh data, tambahkan insert statement sesuai kebutuhan
     }
 }

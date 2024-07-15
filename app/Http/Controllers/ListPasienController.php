@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Pasien;
 use App\Models\Location;
+use Illuminate\Support\Facades\Auth;
+
 
 class ListPasienController extends Controller
 {
@@ -36,21 +38,41 @@ class ListPasienController extends Controller
 
         return view("menu.manajemen-pasien-lokasi", compact('pasien', 'latest_status', 'location'));
     }
-
     public function index()
     {
-        // Subquery untuk mendapatkan data terbaru dari setiap nik
-        $subquery = DB::table('pasien as p1')
-            ->select('p1.nik', DB::raw('MAX(p1.created_at) as max_created_at'))
-            ->groupBy('p1.nik');
+        $user = Auth::user();
 
-        // Join subquery dengan tabel pasien untuk mendapatkan data terbaru per nik
-        $pasien = Pasien::joinSub($subquery, 'latest', function ($join) {
-            $join->on('pasien.nik', '=', 'latest.nik')
-                ->on('pasien.created_at', '=', 'latest.max_created_at');
-        })
-            ->orderByDesc('latest.max_created_at') // Urutkan berdasarkan created_at terbaru
-            ->paginate(5); // Menambahkan pagination dengan 5 data per halaman
+        if ($user->role == 'Operator') {
+            $userLocationId = $user->id_location;
+
+            // Subquery to get the latest data for each nik filtered by location
+            $subquery = DB::table('pasien as p1')
+                ->select('p1.nik', DB::raw('MAX(p1.created_at) as max_created_at'))
+                ->where('p1.id_location', $userLocationId)
+                ->groupBy('p1.nik');
+
+            // Join subquery with pasien table to get the latest data per nik filtered by location
+            $pasien = Pasien::joinSub($subquery, 'latest', function ($join) {
+                $join->on('pasien.nik', '=', 'latest.nik')
+                    ->on('pasien.created_at', '=', 'latest.max_created_at');
+            })
+                ->where('pasien.id_location', $userLocationId)
+                ->orderByDesc('latest.max_created_at') // Order by the latest created_at
+                ->paginate(5); // Add pagination with 5 items per page
+        } else {
+            // Subquery to get the latest data for each nik without location filtering
+            $subquery = DB::table('pasien as p1')
+                ->select('p1.nik', DB::raw('MAX(p1.created_at) as max_created_at'))
+                ->groupBy('p1.nik');
+
+            // Join subquery with pasien table to get the latest data per nik without location filtering
+            $pasien = Pasien::joinSub($subquery, 'latest', function ($join) {
+                $join->on('pasien.nik', '=', 'latest.nik')
+                    ->on('pasien.created_at', '=', 'latest.max_created_at');
+            })
+                ->orderByDesc('latest.max_created_at') // Order by the latest created_at
+                ->paginate(5); // Add pagination with 5 items per page
+        }
 
         return view("menu.manajemen-pasien", compact('pasien'));
     }

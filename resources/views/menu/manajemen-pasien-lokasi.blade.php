@@ -63,11 +63,9 @@
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Status Pasien</th>
-                                         @if (auth()->user()->role != 'Guest')
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Aksi</th>
-                                        @endif
                                     </tr>
                                 </thead>
                                     <tbody>
@@ -89,8 +87,7 @@
                                                     <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                         {{ $data->location->name_location }}</td>
                                                     <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        XXXXXX</td> <!-- Menampilkan status gizi terbaru -->
-                                                     @if (auth()->user()->role != 'Guest')
+                                                        XXXXXX</td>
                                                     <td class="align-middle text-center">
                                                         <div class="d-inline-flex flex-column align-items-center">
                                                             <a href="{{ route('detail-pengukuran', $data->id) }}" class="btn btn-info btn-sm mb-2"
@@ -106,7 +103,6 @@
                                                             </form>
                                                         </div>
                                                     </td>
-                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @else

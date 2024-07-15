@@ -55,11 +55,12 @@
                                     </div>
                                 </div>
                             </div>
-
                             <a href="{{ route('list-pasien') }}" class="btn btn-secondary btn-sm">Kembali</a>
+                            @if (auth()->user()->role != 'Guest')
                             <button type="button" class="btn btn-primary btn-sm float-end"
                                 onclick="window.location='{{ route('tambah-pengukuran', ['id' => $id]) }}'">+ Tambah Data
                                 Pengukuran</button>
+                            @endif
                         </form>
                     </div>
                 </div>

@@ -57,10 +57,20 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="role" class="form-control-label">Role User</label>
-                                    <select id="role" name="role" class="form-control">
+                                    <select id="role" name="role" class="form-control" onchange="togglePuskesmasField()">
                                         <option value="Admin">Admin</option>
                                         <option value="Guest">Guest</option>
                                         <option value="Operator">Operator</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="puskesmas-field" style="display:none;">
+                                <div class="form-group">
+                                    <label for="id_location" class="form-control-label">Pilihan Puskesmas</label>
+                                    <select id="id_location" name="id_location" class="form-control">
+                                        @foreach($locations as $location)
+                                            <option value="{{ $location->id }}">{{ $location->name_location }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -74,4 +84,16 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePuskesmasField() {
+    var role = document.getElementById('role').value;
+    var puskesmasField = document.getElementById('puskesmas-field');
+    if (role === 'Operator') {
+        puskesmasField.style.display = 'block';
+    } else {
+        puskesmasField.style.display = 'none';
+    }
+}
+</script>
 @endsection
