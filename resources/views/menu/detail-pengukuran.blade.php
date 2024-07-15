@@ -250,6 +250,8 @@
     const heightToAgePoints = measurementData.map(measurement => ({ x: measurement.umur, y: measurement.tinggi_badan }));
     const weightToHeightPoints = measurementData.map(measurement => ({ x: measurement.tinggi_badan, y: measurement.berat_badan })).sort((a, b) => a.x - b.x).slice(1);
 
+    // Filter out points with 0 or null values for height or weight
+    // weightToHeightPoints = weightToHeightPoints.filter(point => point.x && point.y);
 
     // Weight to Age Chart
     const weightToAgeLabels = @json($bblabels);
@@ -579,7 +581,8 @@
                     title: {
                         display: true,
                         text: 'Tinggi Badan (cm)' // Label for the x-axis
-                    }
+                    },
+                    min: 45
                 },
                 y: {
                     display: true,
