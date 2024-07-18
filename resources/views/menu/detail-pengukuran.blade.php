@@ -234,8 +234,6 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-
 <script>
     const ZScoreWH = @json($ZScoreWH);
     const ZScoreHeight = @json($ZScoreHeight);
@@ -245,6 +243,11 @@
     const Age = @json($pasien->umur);
 
     const measurementData = @json($measurements);
+
+    
+    function filterInvalidPoints(points) {
+        return points.filter(point => point.x !== null && point.y !== null);
+    }
 
     // Create arrays for all measurement points
     const weightToAgePoints = measurementData.map(measurement => ({ x: measurement.umur, y: measurement.berat_badan }));
