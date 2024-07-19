@@ -12,8 +12,11 @@ class ProfilController extends Controller
 {
     public function index()
     {
-        return view('menu.profil');
+        $user = auth()->user()->load('location');
+        return view('menu.profil', compact('user'));
     }
+
+
 
     public function edit()
     {

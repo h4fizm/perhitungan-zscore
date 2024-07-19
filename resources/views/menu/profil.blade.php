@@ -35,13 +35,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="nama_user" class="form-control-label">Nama User</label>
-                                    <input id="nama_user" name="name" class="form-control" type="text" placeholder="Masukkan nama Anda" value="{{ auth()->user()->name }}">
+                                    <input id="nama_user" name="name" class="form-control" type="text" placeholder="Masukkan nama Anda" value="{{ $user->name }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="email" class="form-control-label">Email</label>
-                                    <input id="email" name="email" class="form-control" type="email" placeholder="Masukkan alamat email Anda" value="{{ auth()->user()->email }}">
+                                    <input id="email" name="email" class="form-control" type="email" placeholder="Masukkan alamat email Anda" value="{{ $user->email }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -79,17 +79,17 @@
                     </div>
                 </div>
                 <div class="card-body pt-0">
-                <div class="text-center mt-4">
-                    <h5>
-                        {{ auth()->user()->name }}<span class="font-weight-light"></span>
-                    </h5>
-                    <div class="h6 font-weight-300">
-                        <i class="ni location_pin mr-2">
-                            {{ auth()->user()->role }}
-                        </i>
+                    <div class="text-center mt-4">
+                        <h5>
+                            {{ $user->name }}<span class="font-weight-light"></span>
+                        </h5>
+                        <div class="h6 font-weight-300">
+                            <i class="ni location_pin mr-2">
+                                {{ $user->role }} - {{ $user->location->name_location ?? '' }}
+                            </i>
+                        </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
