@@ -32,4 +32,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class);
     }
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'id_location');
+    }
+
+
 }

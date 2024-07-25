@@ -105,9 +105,9 @@
                         <h5>
                             {{ $user->name }}<span class="font-weight-light"></span>
                         </h5>
-                        <div class="h6 font-weight-300">
+                         <div class="h6 font-weight-300">
                             <i class="ni location_pin mr-2">
-                                {{ $user->role }}
+                                {{ $user->role }} - {{ $user->location->name_location ?? '' }}
                             </i>
                         </div>
                     </div>
