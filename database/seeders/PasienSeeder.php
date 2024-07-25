@@ -27,6 +27,7 @@ class PasienSeeder extends Seeder
                 'tinggi_badan' => 0,
                 'status_gizi' => 'normal',      //'stunting', 'normal', 'obesitas'
                 'status_tinggi' => 'normal',    //'pendek', 'normal', 'tinggi'
+                'kategori' => 'sehat',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -43,6 +44,7 @@ class PasienSeeder extends Seeder
                 'tinggi_badan' => 0,
                 'status_gizi' => 'normal',      //'stunting', 'normal', 'obesitas'
                 'status_tinggi' => 'normal',    //'pendek', 'normal', 'tinggi'
+                'kategori' => 'sehat',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -59,6 +61,7 @@ class PasienSeeder extends Seeder
                 'tinggi_badan' => 0,
                 'status_gizi' => 'normal',      //'stunting', 'normal', 'obesitas'
                 'status_tinggi' => 'normal',    //'pendek', 'normal', 'tinggi'
+                'kategori' => 'sehat',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -75,6 +78,7 @@ class PasienSeeder extends Seeder
                 'tinggi_badan' => 0,
                 'status_gizi' => 'normal',  //'stunting', 'normal', 'obesitas'
                 'status_tinggi' => 'normal', //'pendek', 'normal', 'tinggi'
+                'kategori' => 'sehat',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -91,6 +95,7 @@ class PasienSeeder extends Seeder
                 'tinggi_badan' => 0,
                 'status_gizi' => 'normal',      //'stunting', 'normal', 'obesitas'
                 'status_tinggi' => 'normal',    //'pendek', 'normal', 'tinggi'
+                'kategori' => 'sehat',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]

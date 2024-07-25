@@ -80,11 +80,7 @@
                     </div>
                 </div>
             </div>
-            <p>{{ $ZScoreWeight }}</p>
-            <p>{{ $ZScoreHeight }}</p>
-            <p>Z Score untuk Berat Badan Menurut Tinggi Badan</p>
-            <p>{{ $ZScoreWH }}</p>
-            <p>ini ada</p>
+            
 
             {{-- Grafik kedua --}}
             <div class="col-lg-12 mb-4">
@@ -152,6 +148,9 @@
                                             Status Tinggi Pasien</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Kategori</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Aksi</th>
                                     </tr>
                                 </thead>
@@ -170,9 +169,11 @@
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                 {{ $measurement->tinggi_badan }}</td>
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $statusGizi  }}</td>
+                                                {{ $statusGizi[$index] }}</td>
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $statusTinggi }}</td>
+                                                {{ $statusTinggi[$index] }}</td>
+                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                {{ $statusWH[$index] }}</td>
                                             <td class="align-middle text-center">
                                                 <div class="d-inline-flex flex-column align-items-center">
                                                     @if ($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
@@ -235,11 +236,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const ZScoreWH = @json($ZScoreWH);
-    const ZScoreHeight = @json($ZScoreHeight);
-    const ZScoreWeight = @json($ZScoreWeight);
-    const Weight = @json($Weight);
-    const Height = @json($height);
+    
+    
     const Age = @json($pasien->umur);
 
     const measurementData = @json($measurements);

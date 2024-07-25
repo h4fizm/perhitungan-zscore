@@ -21,19 +21,15 @@ class PasienController extends Controller
     public function index($id)
     {
         $pasien = Pasien::findOrFail($id);
-        // dd($pasien);exit();
         $jenis_kelamin = ['laki-laki', 'perempuan'];
         $faskes = Location::pluck('name_location', 'id')->toArray();
-
+    
         $measurements = Pasien::where('nik', $pasien->nik)->orderBy('tanggal_pengukuran', 'desc')->get();
-
+    
         $umurOptions = BBlaki::orderBy('umur')->get();
-
-        // Retrieve the location information for the patient
+    
         $location = Location::findOrFail($pasien->id_location);
-
-        $medianValue = null;
-
+    
         $bbn3sdData = [];
         $bbp3sdData = [];
         $bbn2sdData = [];
@@ -41,239 +37,42 @@ class PasienController extends Controller
         $bbn1sdData = [];
         $bbp1sdData = [];
         $labels = [];
-
-        $statusGizi = "data belum diisi";
-        $statusTinggi = "data belum diisi";
-
+    
+        $statusGizi = [];
+        $statusTinggi = [];
+        $statusWH = [];
+    
         if ($pasien->jenis_kelamin == 'laki-laki') {
             $dataBBPasien = BBlaki::orderBy('UMUR')->get();
             $tbData = TBlaki::orderBy('UMUR')->get();
             $bbtbData = BbtBlaki::orderBy('TB')->get();
-            $Weight = $pasien->berat_badan;
-            $height = $pasien->tinggi_badan;
-            
-            if ($height > 0 && $Weight > 0) {
-                // $roundedHeight = 0;
-                $roundedHeight = round($height, 0, PHP_ROUND_HALF_UP);
-                // dd($roundedHeight);exit();
-
-                $medianRecord = BbtBlaki::where('TB', $roundedHeight)->first();
-                if ($medianRecord) {
-                    $medianValue = $medianRecord->MEDIAN;
-                }
-                $rentangTerdekat = $Weight - $medianValue;
-                // dd($medianValue);exit();
-
-                if ($rentangTerdekat > 0 ) {
-                    $zScoreFromP1SD = BbtBlaki::where('TB', $roundedHeight)->pluck('P1SD')->first();
-
-                    $NilaiRentangTerdekat = $zScoreFromP1SD;
-                    $ZScoreWeihgtHeight = ($Weight - $medianValue) / ($NilaiRentangTerdekat - $medianValue);
-                }
-                else if ($rentangTerdekat < 0) {
-                    $zScoreFromN1SD = BbtBlaki::where('TB', $roundedHeight)->pluck('N1SD')->first();
-
-                    $NilaiRentangTerdekat = $zScoreFromN1SD;
-                    $ZScoreWeihgtHeight = ($Weight - $medianValue) / ($medianValue - $NilaiRentangTerdekat);
-                }
-                $ZScoreWH = $ZScoreWeihgtHeight;
-
-                $medianRecordHeight = TBlaki::where('UMUR', $pasien->umur)->first();
-                // dd($medianRecordHeight);exit();
-                if ($medianRecordHeight) {
-                    $medianValueHeight = $medianRecordHeight->MEDIAN;
-                }
-                $rentangTerdekatHeigt = $height - $medianValueHeight;
-                // dd($medianValueHeight);exit();
-                if ($rentangTerdekatHeigt > 0) {
-                    $zScoreFromP1SD = TBlaki::where('UMUR', $pasien->umur)->pluck('P1SD')->first();
-
-                    $NilaiRentangTerdekatHeight = $zScoreFromP1SD;
-                    $ZScoreHt = ($height - $medianValueHeight) / ($NilaiRentangTerdekatHeight - $medianValueHeight);
-                } 
-                else if ($rentangTerdekatHeigt < 0 ) {
-                    $zScoreFromN1SD = TBlaki::where('UMUR', $pasien->umur)->pluck('N1SD')->first();
-
-                    $NilaiRentangTerdekatHeight = $zScoreFromN1SD;
-                    $ZScoreHt = ($height - $medianValueHeight) / ($medianValueHeight - $NilaiRentangTerdekatHeight);
-                } 
-                
-                $ZScoreHeight = $ZScoreHt;
-                // dd($NilaiRentangTerdekatHeight);exit();
-
-                $medianRecordWeight = BBlaki::where('UMUR', $pasien->umur)->first();
-
-                if ($medianRecordWeight) {
-                    $medianWeightValue = $medianRecordWeight->MEDIAN;
-                }
-                $rentangTerdekatWeight = $Weight - $medianWeightValue;
-                if ($rentangTerdekatWeight > 0) {
-                    $zScoreFromP1SD = BBlaki::where('UMUR', $pasien->umur)->pluck('P1SD')->first();
-
-                    $NilaiRentangTerdekatWeight = $zScoreFromP1SD;
-                    $ZScoreWt = ($Weight - $medianWeightValue) / ($NilaiRentangTerdekatWeight - $medianWeightValue);
-
-                } else if ($rentangTerdekatWeight < 0) {
-                    $zScoreFromN1SD = BBlaki::where('UMUR', $pasien->umur)->pluck('N1SD')->first();
-
-                    $NilaiRentangTerdekatWeight = $zScoreFromN1SD;
-                    $ZScoreWt = ($Weight - $medianWeightValue) / ($medianWeightValue - $NilaiRentangTerdekatWeight);
-                }
-                // dd($rentangTerdekatWeight);exit();
-                $ZScoreWeight = $ZScoreWt;
-
-                if($ZScoreWeight > 2){
-                    $statusGizi = "Gizi Lebih";
-                }
-                else if($ZScoreWeight >= -2 && $ZScoreWeight <= 2){
-                    $statusGizi = "Gizi Baik";
-                }
-                else if($ZScoreWeight >= -3 && $ZScoreWeight < -2){
-                    $statusGizi = "baik";
-                }
-                else if($ZScoreWeight <= -3){
-                    $statusGizi = "Gizi Buruk";
-                } else{
-                    $statusGizi = "data belum dimasukkan";
-                }
-                
-                if($ZScoreHeight > 2){
-                    $statusTinggi = "Tinggi";
-                }
-                else if($ZScoreHeight >= -2 && $ZScoreHeight <= 2){
-                    $statusTinggi = "Normal";
-                }
-                else if($ZScoreHeight > -3 && $ZScoreHeight < -2){
-                    $statusTinggi = "Pendek";
-                }
-                else if($ZScoreHeight <= -3){
-                    $statusTinggi = "Sangat Pendek";
-                } else{
-                    $statusTinggi = "data belum dimasukkan";
-                }
-
-                // dd($statusTinggi);exit();
-            } else {
-                $ZScoreWeight = null; // Set ZScore to null if Weight is not greater than 0
-                $ZScoreWH = null; // Set ZScore to null if Weight is not greater than 0
-                $ZScoreHeight = null; // Set ZScore to null if Weight is not greater than 0
-            }
         } else {
-            $medianRecord = BBperempuan::where('UMUR', $pasien->umur)->first();
             $dataBBPasien = BBperempuan::orderBy('UMUR')->get();
             $tbData = TBperempuan::orderBy('UMUR')->get();
             $bbtbData = Bbtbperempuan::orderBy('TB')->get();
-            $medianHeight = TBperempuan::where('UMUR', $pasien->umur)->first();
-            // Check if the record exists and retrieve the Median value
-            if ($medianRecord) {
-                $medianValue = $medianRecord->MEDIAN;
-            }
-            $Weight = $pasien->berat_badan;
-
-            $height = $pasien->tinggi_badan;
-
-            // dd($height);exit(); 
-            if ($height > 0 && $Weight > 0) {
-                // $roundedHeight = 0;
-                $roundedHeight = round($height, 0, PHP_ROUND_HALF_UP);
-
-                $medianRecord = Bbtbperempuan::where('TB', $roundedHeight)->first();
-                if ($medianRecord) {
-                    $medianValue = $medianRecord->MEDIAN;
-                }
-                $rentangTerdekat = $Weight - $medianValue;
-                // dd($medianValue);exit();
-
-                if ($rentangTerdekat >= 0) {
-                    $zScoreFromP1SD = Bbtbperempuan::where('TB', $roundedHeight)->pluck('P1SD')->first();
-
-                    $NilaiRentangTerdekat = $zScoreFromP1SD;
-                    $ZScoreWeightHeight = ($Weight - $medianValue) / ($NilaiRentangTerdekat - $medianValue);
-                } 
-                else if ($rentangTerdekat < 0) {
-                    $zScoreFromN1SD = Bbtbperempuan::where('TB', $roundedHeight)->pluck('N1SD')->first();
-
-                    $NilaiRentangTerdekat = $zScoreFromN1SD;
-                    $ZScoreWeightHeight = ($Weight - $medianValue) / ($medianValue - $NilaiRentangTerdekat);
-                }
-                // dd($NilaiRentangTerdekat);exit();
-                $ZScoreWH = $ZScoreWeightHeight;
-
-                $medianRecordHeight = TBperempuan::where('UMUR', $pasien->umur)->first();
-                if ($medianRecordHeight) {
-                    $medianValueHeight = $medianRecordHeight->MEDIAN;
-                }
-                $rentangTerdekatHeigt = $height - $medianValueHeight;
-                
-                if ($rentangTerdekatHeigt > 0) {
-                    $zScoreFromP1SD = TBperempuan::where('UMUR', $pasien->umur)->pluck('P1SD')->first();
-
-                    $NilaiRentangTerdekatHeight = $zScoreFromP1SD;
-                    $ZScoreHt = ($height - $medianValueHeight) / ($NilaiRentangTerdekatHeight - $medianValueHeight);
-
-                } else if ($rentangTerdekatHeigt < 0) {
-                    $zScoreFromN1SD = TBperempuan::where('UMUR', $pasien->umur)->pluck('N1SD')->first();
-
-                    $NilaiRentangTerdekatHeight = $zScoreFromN1SD;
-                    $ZScoreHt = ($height - $medianValueHeight) / ($medianValueHeight - $NilaiRentangTerdekatHeight);
-                }
-                $ZScoreHeight = $ZScoreHt;
-
-                $medianRecordWeight = BBperempuan::where('UMUR', $pasien->umur)->first();
-
-                if ($medianRecordWeight) {
-                    $medianWeightValue = $medianRecordWeight->MEDIAN;
-                }
-                $rentangTerdekatWeight = $Weight - $medianWeightValue;
-                if ($rentangTerdekatWeight > 0) {
-                    $zScoreFromP1SD = BBperempuan::where('UMUR', $pasien->umur)->pluck('P1SD')->first();
-
-                    $NilaiRentangTerdekatWeight = $zScoreFromP1SD;
-                    $ZScoreWt = ($Weight - $medianWeightValue) / ($NilaiRentangTerdekatWeight - $medianWeightValue);
-                } else if ($rentangTerdekatWeight < 0) {
-                    $zScoreFromN1SD = BBperempuan::where('UMUR', $pasien->umur)->pluck('N1SD')->first();
-
-                    $NilaiRentangTerdekatWeight = $zScoreFromN1SD;
-                    $ZScoreWt = ($Weight - $medianWeightValue) / ($medianWeightValue - $NilaiRentangTerdekatWeight);
-                }
-
-                $ZScoreWeight = $ZScoreWt;
-                // dd($ZScoreWeight);exit();
-                if($ZScoreWeight > 2){
-                    $statusGizi = "Gizi Lebih";
-                }
-                else if($ZScoreWeight >= -2 && $ZScoreWeight <= 2){
-                    $statusGizi = "Gizi Baik";
-                }
-                else if($ZScoreWeight >= -3 && $ZScoreWeight < -2){
-                    $statusGizi = "baik";
-                }
-                else if($ZScoreWeight <= -3){
-                    $statusGizi = "Gizi Buruk";
-                } else{
-                    $statusGizi = "data belum dimasukkan";
-                }
-
-                if($ZScoreHeight > 2){
-                    $statusTinggi = "Tinggi";
-                }
-                else if($ZScoreHeight >= -2 && $ZScoreHeight <= 2){
-                    $statusTinggi = "Normal";
-                }
-                else if($ZScoreHeight >= -3 && $ZScoreHeight < -2){
-                    $statusTinggi = "Pendek";
-                }
-                else if($ZScoreHeight <= -3){
-                    $statusTinggi = "Sangat Pendek";
-                } else{
-                    $statusTinggi = "data belum dimasukkan";
-                }
+        }
+    
+        foreach ($measurements as $measurement) {
+            $umur = $measurement->umur;
+            $berat_badan = $measurement->berat_badan;
+            $tinggi_badan = $measurement->tinggi_badan;
+    
+            if ($tinggi_badan > 0 && $berat_badan > 0) {
+                // Calculate Z Scores for Weight-for-Age, Height-for-Age, and Weight-for-Height
+                $ZScoreWeight = $this->calculateZScoreWeight($pasien->jenis_kelamin, $umur, $berat_badan);
+                $ZScoreHeight = $this->calculateZScoreHeight($pasien->jenis_kelamin, $umur, $tinggi_badan);
+                $ZScoreWH = $this->calculateZScoreWH($pasien->jenis_kelamin, $tinggi_badan, $berat_badan);
+    
+                $statusGizi[] = $this->determineNutritionalStatus($ZScoreWeight);
+                $statusTinggi[] = $this->determineHeightStatus($ZScoreHeight);
+                $statusWH[] = $this->determineWeightHeightStatus($ZScoreWH);
             } else {
-                $ZScoreWeight = null; // Set ZScore to null if Weight is not greater than 0
-                $ZScoreWH = null; // Set ZScore to null if Weight is not greater than 0
-                $ZScoreHeight = null; // Set ZScore to null if Weight is not greater than 0
+                $statusGizi[] = "data belum diisi";
+                $statusTinggi[] = "data belum diisi";
+                $statusWH[] = "data belum diisi";
             }
         }
+    
         foreach ($dataBBPasien as $record) {
             $bblabels[] = $record->UMUR;
             $bbp3sdData[] = $record->P3SD;
@@ -283,7 +82,7 @@ class PasienController extends Controller
             $bbn2sdData[] = $record->N2SD;
             $bbn3sdData[] = $record->N3SD;
         }
-
+    
         // Second chart data (Height to Age)
         $heightToAgeLabels = [];
         $n3sdHeightData = [];
@@ -292,8 +91,7 @@ class PasienController extends Controller
         $p2sdHeightData = [];
         $n1sdHeightData = [];
         $p1sdHeightData = [];
-
-
+    
         foreach ($tbData as $record) {
             $heightToAgeLabels[] = $record->UMUR;
             $n3sdHeightData[] = $record->N3SD;
@@ -303,8 +101,16 @@ class PasienController extends Controller
             $n1sdHeightData[] = $record->N1SD;
             $p1sdHeightData[] = $record->P1SD;
         }
-
-        //third data chart
+    
+        // Third data chart
+        $weightToHeightLabels = [];
+        $n3sdWeightData = [];
+        $p3sdWeightData = [];
+        $n2sdWeightData = [];
+        $p2sdWeightData = [];
+        $n1sdWeightData = [];
+        $p1sdWeightData = [];
+    
         foreach ($bbtbData as $record) {
             $weightToHeightLabels[] = $record->TB;
             $n3sdWeightData[] = $record->N3SD;
@@ -314,11 +120,103 @@ class PasienController extends Controller
             $n1sdWeightData[] = $record->N1SD;
             $p1sdWeightData[] = $record->P1SD;
         }
+    
         $tbValues = BbtBlaki::orderBy('TB', 'asc')->pluck('TB');
-
-        // dd($id);exit();
-
-        return view('menu.detail-pengukuran', compact('location', 'pasien', 'jenis_kelamin', 'faskes', 'measurements', 'umurOptions', 'id', 'medianValue', 'ZScoreWeight', 'ZScoreHeight', 'ZScoreWH', 'bbn3sdData', 'n3sdHeightData', 'bbn2sdData', 'n2sdHeightData', 'bbn1sdData', 'n1sdHeightData', 'bbp1sdData', 'p1sdHeightData', 'bbp2sdData', 'p2sdHeightData', 'bbp3sdData', 'p3sdHeightData', 'bblabels', 'heightToAgeLabels', 'n3sdWeightData', 'p3sdWeightData', 'n2sdWeightData', 'p2sdWeightData', 'n1sdWeightData', 'p1sdWeightData', 'weightToHeightLabels', 'tbValues', 'Weight', 'height', 'statusTinggi', 'statusGizi'));
+    
+        return view('menu.detail-pengukuran', compact('location', 'pasien', 'jenis_kelamin', 'faskes', 'measurements', 'umurOptions', 'id', 'bbn3sdData', 'n3sdHeightData', 'bbn2sdData', 'n2sdHeightData', 'bbn1sdData', 'n1sdHeightData', 'bbp1sdData', 'p1sdHeightData', 'bbp2sdData', 'p2sdHeightData', 'bbp3sdData', 'p3sdHeightData', 'bblabels', 'heightToAgeLabels', 'n3sdWeightData', 'p3sdWeightData', 'n2sdWeightData', 'p2sdWeightData', 'n1sdWeightData', 'p1sdWeightData', 'weightToHeightLabels', 'tbValues', 'statusGizi', 'statusTinggi', 'statusWH'));
+    }
+    
+    private function calculateZScoreWeight($jenis_kelamin, $umur, $berat_badan) {
+        if ($jenis_kelamin == 'laki-laki') {
+            $medianRecord = BBlaki::where('UMUR', $umur)->first();
+        } else {
+            $medianRecord = BBperempuan::where('UMUR', $umur)->first();
+        }
+        if ($medianRecord) {
+            $medianValue = $medianRecord->MEDIAN;
+            $rentangTerdekat = $berat_badan - $medianValue;
+            $zScoreFromSD = $rentangTerdekat > 0
+                ? ($jenis_kelamin == 'laki-laki' ? BBlaki::where('UMUR', $umur)->pluck('P1SD')->first() : BBperempuan::where('UMUR', $umur)->pluck('P1SD')->first())
+                : ($jenis_kelamin == 'laki-laki' ? BBlaki::where('UMUR', $umur)->pluck('N1SD')->first() : BBperempuan::where('UMUR', $umur)->pluck('N1SD')->first());
+            $NilaiRentangTerdekat = $zScoreFromSD;
+            $penyebut = $berat_badan - $medianValue;
+            // dd($penyebut);
+            if ($penyebut > 0){
+                return ($penyebut) / ($NilaiRentangTerdekat - $medianValue);
+            } else{
+                return ($penyebut) / ($medianValue - $NilaiRentangTerdekat);
+            }
+        }
+        return null;
+    }
+    
+    private function calculateZScoreHeight($jenis_kelamin, $umur, $tinggi_badan) {
+        if ($jenis_kelamin == 'laki-laki') {
+            $medianRecord = TBlaki::where('UMUR', $umur)->first();
+        } else {
+            $medianRecord = TBperempuan::where('UMUR', $umur)->first();
+        }
+        if ($medianRecord) {
+            $medianValue = $medianRecord->MEDIAN;
+            $rentangTerdekat = $tinggi_badan - $medianValue;
+            $zScoreFromSD = $rentangTerdekat > 0
+                ? ($jenis_kelamin == 'laki-laki' ? TBlaki::where('UMUR', $umur)->pluck('P1SD')->first() : TBperempuan::where('UMUR', $umur)->pluck('P1SD')->first())
+                : ($jenis_kelamin == 'laki-laki' ? TBlaki::where('UMUR', $umur)->pluck('N1SD')->first() : TBperempuan::where('UMUR', $umur)->pluck('N1SD')->first());
+            $NilaiRentangTerdekat = $zScoreFromSD;
+            $penyebut = $tinggi_badan - $medianValue;
+            if($penyebut > 0){
+                return ($penyebut) / ($NilaiRentangTerdekat - $medianValue);
+            }else {
+                return ($penyebut) / ($medianValue - $NilaiRentangTerdekat);
+            }
+        }
+        return null;
+    }
+    
+    private function calculateZScoreWH($jenis_kelamin, $tinggi_badan, $berat_badan) {
+        $roundedHeight = round($tinggi_badan, 0, PHP_ROUND_HALF_UP);
+        if ($jenis_kelamin == 'laki-laki') {
+            $medianRecord = BbtBlaki::where('TB', $roundedHeight)->first();
+        } else {
+            $medianRecord = Bbtbperempuan::where('TB', $roundedHeight)->first();
+        }
+        if ($medianRecord) {
+            $medianValue = $medianRecord->MEDIAN;
+            $rentangTerdekat = $berat_badan - $medianValue;
+            $zScoreFromSD = $rentangTerdekat > 0
+                ? ($jenis_kelamin == 'laki-laki' ? BbtBlaki::where('TB', $roundedHeight)->pluck('P1SD')->first() : Bbtbperempuan::where('TB', $roundedHeight)->pluck('P1SD')->first())
+                : ($jenis_kelamin == 'laki-laki' ? BbtBlaki::where('TB', $roundedHeight)->pluck('N1SD')->first() : Bbtbperempuan::where('TB', $roundedHeight)->pluck('N1SD')->first());
+            $NilaiRentangTerdekat = $zScoreFromSD;
+            $penyebut = $berat_badan - $medianValue;
+            if($penyebut > 0){
+                return ($penyebut) / ($NilaiRentangTerdekat - $medianValue);
+            }else {
+                return ($penyebut) / ($medianValue - $NilaiRentangTerdekat);
+            }
+        }
+        return null;
+    }
+    
+    
+    private function determineNutritionalStatus($ZScoreWeight) {
+        if ($ZScoreWeight > 2) return "Gizi Lebih";
+        if ($ZScoreWeight >= -2 && $ZScoreWeight <= 2) return "Gizi Baik";
+        if ($ZScoreWeight >= -3 && $ZScoreWeight < -2) return "Kurang Gizi";
+        return "Gizi Buruk";
+    }
+    
+    private function determineHeightStatus($ZScoreHeight) {
+        if ($ZScoreHeight > 2) return "Tinggi";
+        if ($ZScoreHeight >= -2 && $ZScoreHeight <= 2) return "Normal";
+        if ($ZScoreHeight > -3 && $ZScoreHeight < -2) return "Pendek";
+        return "Sangat Pendek";
+    }
+    
+    private function determineWeightHeightStatus($ZScoreWH) {
+        if ($ZScoreWH > 2) return "Gemuk";
+        if ($ZScoreWH >= -2 && $ZScoreWH <= 2) return "Normal";
+        if ($ZScoreWH >= -3 && $ZScoreWH < -2) return "Kurus";
+        return "Sangat Kurus";
     }
 
     public function tambah($id)
@@ -345,20 +243,177 @@ class PasienController extends Controller
             'tinggi_badan' => 'required|numeric',
         ]);
 
+        // Ambil nilai berat_badan dan tinggi_badan dari request
+        $berat_badan = $request->berat_badan;
+        $tinggi_badan = $request->tinggi_badan;
+
+        $pasien = Pasien::findOrFail($id);
+        $jenis_kelamin = $request->jenis_kelamin;
+        $umur = $request->umur;
+
+        $statusGizi = "data belum diisi";
+        $statusTinggi = "data belum diisi";
+        $statusWH = "data belum diisi";
+
+        if ($jenis_kelamin == 'laki-laki') {
+            $dataBBPasien = BBlaki::orderBy('UMUR')->get();
+            $tbData = TBlaki::orderBy('UMUR')->get();
+            $bbtbData = BbtBlaki::orderBy('TB')->get();
+            
+            if ($tinggi_badan > 0 && $berat_badan > 0) {
+                $roundedHeight = round($tinggi_badan, 0, PHP_ROUND_HALF_UP);
+                $medianRecord = BbtBlaki::where('TB', $roundedHeight)->first();
+                $medianValue = $medianRecord ? $medianRecord->MEDIAN : null;
+
+                if ($medianValue !== null) {
+                    $rentangTerdekat = $berat_badan - $medianValue;
+                    $zScoreFromSD = $rentangTerdekat > 0
+                        ? BbtBlaki::where('TB', $roundedHeight)->pluck('P1SD')->first()
+                        : BbtBlaki::where('TB', $roundedHeight)->pluck('N1SD')->first();
+                    $NilaiRentangTerdekat = $zScoreFromSD;
+                    $pembilang = $berat_badan - $medianValue;
+                    if($pembilang > 0){
+                        $ZScoreWeihgtHeight = ($pembilang) / ($NilaiRentangTerdekat - $medianValue);
+                    }else{
+                        $ZScoreWeihgtHeight = ($pembilang) / ($medianValue - $NilaiRentangTerdekat);
+                    }
+
+                    $ZScoreWH = $ZScoreWeihgtHeight;
+                }
+
+                $medianRecordHeight = TBlaki::where('UMUR', $umur)->first();
+                $medianValueHeight = $medianRecordHeight ? $medianRecordHeight->MEDIAN : null;
+
+                if ($medianValueHeight !== null) {
+                    $rentangTerdekatHeigt = $tinggi_badan - $medianValueHeight;
+                    $zScoreFromHeightSD = $rentangTerdekatHeigt > 0
+                        ? TBlaki::where('UMUR', $umur)->pluck('P1SD')->first()
+                        : TBlaki::where('UMUR', $umur)->pluck('N1SD')->first();
+                    $NilaiRentangTerdekatHeight = $zScoreFromHeightSD;
+                    $pembilang = $tinggi_badan - $medianValueHeight;
+                    if($pembilang > 0){
+                        $ZScoreHt = ($pembilang) / ($NilaiRentangTerdekatHeight - $medianValueHeight);
+                    } else {
+                        $ZScoreHt = ($pembilang) / ($medianValueHeight - $NilaiRentangTerdekatHeight);
+                    }
+                    $ZScoreHeight = $ZScoreHt;
+                }
+
+                $medianRecordWeight = BBlaki::where('UMUR', $umur)->first();
+                $medianWeightValue = $medianRecordWeight ? $medianRecordWeight->MEDIAN : null;
+
+                if ($medianWeightValue !== null) {
+                    $rentangTerdekatWeight = $berat_badan - $medianWeightValue;
+                    $zScoreFromWeightSD = $rentangTerdekatWeight > 0
+                        ? BBlaki::where('UMUR', $umur)->pluck('P1SD')->first()
+                        : BBlaki::where('UMUR', $umur)->pluck('N1SD')->first();
+                    $NilaiRentangTerdekatWeight = $zScoreFromWeightSD;
+                    $pembilang = $berat_badan - $medianWeightValue;
+                    if($pembilang > 0){
+                        $ZScoreWt = ($pembilang) / ($NilaiRentangTerdekatWeight - $medianWeightValue);
+                    } else{
+                        $ZScoreWt = ($pembilang) / ($medianWeightValue - $NilaiRentangTerdekatWeight);
+                    }
+                    $ZScoreWeight = $ZScoreWt;
+                }
+
+                $statusGizi = $this->determineNutritionalStatus($ZScoreWeight);
+                $statusTinggi = $this->determineHeightStatus($ZScoreHeight);
+                $statusWH = $this->determineWeightHeightStatus($ZScoreWH);
+            } else {
+                $ZScoreWeight = null; // Set ZScore to null if Weight is not greater than 0
+                $ZScoreWH = null; // Set ZScore to null if Weight is not greater than 0
+                $ZScoreHeight = null; // Set ZScore to null if Weight is not greater than 0
+            }
+        } else {
+            $medianRecord = BBperempuan::where('UMUR', $umur)->first();
+            $dataBBPasien = BBperempuan::orderBy('UMUR')->get();
+            $tbData = TBperempuan::orderBy('UMUR')->get();
+            $bbtbData = Bbtbperempuan::orderBy('TB')->get();
+            $medianHeight = TBperempuan::where('UMUR', $umur)->first();
+
+            if ($tinggi_badan > 0 && $berat_badan > 0) {
+                $roundedHeight = round($tinggi_badan, 0, PHP_ROUND_HALF_UP);
+                $medianRecord = Bbtbperempuan::where('TB', $roundedHeight)->first();
+                $medianValue = $medianRecord ? $medianRecord->MEDIAN : null;
+
+                if ($medianValue !== null) {
+                    $rentangTerdekat = $berat_badan - $medianValue;
+                    $zScoreFromSD = $rentangTerdekat > 0
+                        ? Bbtbperempuan::where('TB', $roundedHeight)->pluck('P1SD')->first()
+                        : Bbtbperempuan::where('TB', $roundedHeight)->pluck('N1SD')->first();
+                    $NilaiRentangTerdekat = $zScoreFromSD;
+                    $pembilang = $berat_badan - $medianValue;
+                    if($pembilang > 0){
+                        $ZScoreWeihgtHeight = ($pembilang) / ($NilaiRentangTerdekat - $medianValue);
+                    }else{
+                        $ZScoreWeihgtHeight = ($pembilang) / ($medianValue - $NilaiRentangTerdekat);
+                    }
+
+                    $ZScoreWH = $ZScoreWeihgtHeight;
+                }
+
+                $medianRecordHeight = TBperempuan::where('UMUR', $umur)->first();
+                $medianValueHeight = $medianRecordHeight ? $medianRecordHeight->MEDIAN : null;
+
+                if ($medianValueHeight !== null) {
+                    $rentangTerdekatHeigt = $tinggi_badan - $medianValueHeight;
+                    $zScoreFromHeightSD = $rentangTerdekatHeigt > 0
+                        ? TBperempuan::where('UMUR', $umur)->pluck('P1SD')->first()
+                        : TBperempuan::where('UMUR', $umur)->pluck('N1SD')->first();
+                    $NilaiRentangTerdekatHeight = $zScoreFromHeightSD;
+                    $pembilang = $tinggi_badan - $medianValueHeight;
+                    if($pembilang > 0){
+                        $ZScoreHt = ($pembilang) / ($NilaiRentangTerdekatHeight - $medianValueHeight);
+                    } else {
+                        $ZScoreHt = ($pembilang) / ($medianValueHeight - $NilaiRentangTerdekatHeight);
+                    }
+                    $ZScoreHeight = $ZScoreHt;
+                }
+
+                $medianRecordWeight = BBperempuan::where('UMUR', $umur)->first();
+                $medianWeightValue = $medianRecordWeight ? $medianRecordWeight->MEDIAN : null;
+
+                if ($medianWeightValue !== null) {
+                    $rentangTerdekatWeight = $berat_badan - $medianWeightValue;
+                    $zScoreFromWeightSD = $rentangTerdekatWeight > 0
+                        ? BBperempuan::where('UMUR', $umur)->pluck('P1SD')->first()
+                        : BBperempuan::where('UMUR', $umur)->pluck('N1SD')->first();
+                    $NilaiRentangTerdekatWeight = $zScoreFromWeightSD;
+                    $pembilang = $berat_badan - $medianWeightValue;
+                    if($pembilang > 0){
+                        $ZScoreWt = ($pembilang) / ($NilaiRentangTerdekatWeight - $medianWeightValue);
+                    } else{
+                        $ZScoreWt = ($pembilang) / ($medianWeightValue - $NilaiRentangTerdekatWeight);
+                    }
+                    $ZScoreWeight = $ZScoreWt;
+                }
+
+                $statusGizi = $this->determineNutritionalStatus($ZScoreWeight);
+                $statusTinggi = $this->determineHeightStatus($ZScoreHeight);
+                $statusWH = $this->determineWeightHeightStatus($ZScoreWH);
+            } else {
+                $ZScoreWeight = null; // Set ZScore to null if Weight is not greater than 0
+                $ZScoreWH = null; // Set ZScore to null if Weight is not greater than 0
+                $ZScoreHeight = null; // Set ZScore to null if Weight is not greater than 0
+            }
+        }
+        // dd($statusGizi);exit();
         // Simpan data pasien ke database
         Pasien::create([
             'nik' => Pasien::findOrFail($id)->nik,
             'nama' => Pasien::findOrFail($id)->nama,
-            'jenis_kelamin' => $request->jenis_kelamin,
+            'jenis_kelamin' => $jenis_kelamin,
             'tanggal_lahir' => Pasien::findOrFail($id)->tanggal_lahir,
-            'umur' => $request->umur,
+            'umur' => $umur,
             'alamat' => Pasien::findOrFail($id)->alamat,
             'id_location' => Pasien::findOrFail($id)->location->id,
             'tanggal_pengukuran' => now(), // Menggunakan nilai saat ini dari created_at
-            'berat_badan' => $request->berat_badan,
-            'tinggi_badan' => $request->tinggi_badan,
-            'status_gizi' => 'normal', // Nilai default untuk status gizi
-            'status_tinggi' => 'normal', // Nilai default untuk status tinggi
+            'berat_badan' => $berat_badan,
+            'tinggi_badan' => $tinggi_badan,
+            'status_gizi' => $statusGizi, // Nilai default untuk status gizi
+            'status_tinggi' => $statusTinggi, // Nilai default untuk status tinggi
+            'kategori' => $statusWH
         ]);
 
         return redirect()->route('list-pasien')->with('success', 'Data pasien berhasil ditambahkan');

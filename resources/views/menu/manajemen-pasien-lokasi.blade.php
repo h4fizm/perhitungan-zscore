@@ -62,9 +62,6 @@
                                             Lokasi Faskes</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Status Pasien</th>
-                                        <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Aksi</th>
                                     </tr>
                                 </thead>
@@ -86,8 +83,6 @@
                                                         {{ $data->umur }} Bulan</td>
                                                     <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                         {{ $data->location->name_location }}</td>
-                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        XXXXXX</td>
                                                     <td class="align-middle text-center">
                                                         <div class="d-inline-flex flex-column align-items-center">
                                                             <a href="{{ route('detail-pengukuran', $data->id) }}" class="btn btn-info btn-sm mb-2"

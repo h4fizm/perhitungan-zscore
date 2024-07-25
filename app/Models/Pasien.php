@@ -23,7 +23,8 @@ class Pasien extends Model
         'berat_badan',
         'tinggi_badan',
         'status_gizi',
-        'status_tinggi'
+        'status_tinggi',
+        'kategori'
     ];
 
     public function location()

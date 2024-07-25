@@ -29,7 +29,7 @@
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jenis Kelamin</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Umur</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lokasi Faskes</th>
-                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status Pasien</th>
+                                        <!-- <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status Pasien</th> -->
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                                     </tr>
                                 </thead>
@@ -50,7 +50,7 @@
                                                 <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                     <a href="{{ route('list-pasien-lokasi', ['id' => $data->location->id]) }}">{{ $data->location->name_location }}</a>
                                                 </td>
-                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">XXXXXX</td>
+                                                <!-- <td class="align-middle text-center text-secondary font-weight-bold text-xs">XXXXXX</td> -->
                                                 <td class="align-middle text-center">
                                                     <div class="d-inline-flex flex-column align-items-center">
                                                         <a href="{{ route('detail-pengukuran', $data->id) }}"

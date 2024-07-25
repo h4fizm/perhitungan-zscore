@@ -23,8 +23,9 @@ return new class extends Migration {
             $table->integer('umur');
             $table->decimal('berat_badan', 8, 2);
             $table->decimal('tinggi_badan', 8, 2);
-            $table->enum('status_gizi', ['stunting', 'normal', 'obesitas']);
-            $table->enum('status_tinggi', ['pendek', 'normal', 'tinggi']);
+            $table->string('status_gizi');
+            $table->string('status_tinggi');
+            $table->string('kategori');
             $table->timestamps();
         });
     }
