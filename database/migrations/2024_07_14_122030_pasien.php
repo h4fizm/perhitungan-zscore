@@ -21,11 +21,11 @@ return new class extends Migration {
             $table->foreign('id_location')->references('id')->on('locations')->onDelete('cascade');
             $table->date('tanggal_pengukuran');
             $table->integer('umur');
-            $table->decimal('berat_badan', 8, 2);
-            $table->decimal('tinggi_badan', 8, 2);
-            $table->string('status_gizi');
-            $table->string('status_tinggi');
-            $table->string('kategori');
+            $table->decimal('berat_badan', 8, 2)->default(0);
+            $table->decimal('tinggi_badan', 8, 2)->default(0);
+            $table->string('status_gizi')->default(''); // Atau nilai default lain yang sesuai
+            $table->string('status_tinggi')->default(''); // Atau nilai default lain yang sesuai
+            $table->string('kategori')->default(''); // Atau nilai default lain yang sesuai
             $table->timestamps();
         });
     }

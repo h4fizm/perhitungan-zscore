@@ -28,9 +28,9 @@ class LokasiController extends Controller
 
             // Calculate totals based on unique patients
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('status_gizi', 'normal')->count();
-            $totalStunting = $uniquePatients->where('status_gizi', 'stunting')->count();
-            $totalObesitas = $uniquePatients->where('status_gizi', 'obesitas')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Normal')->count();
+            $totalStunting = $uniquePatients->whereIn('kategori', ['Kurus', 'Sangat Kurus'])->count();
+            $totalObesitas = $uniquePatients->where('kategori', 'Gemuk')->count();
 
             // Determine the value category based on the counts of patients
             $value = $this->calculateValue($totalNormal, $totalStunting, $totalObesitas);
@@ -74,9 +74,9 @@ class LokasiController extends Controller
 
             // Calculate totals based on unique patients
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('status_gizi', 'normal')->count();
-            $totalStunting = $uniquePatients->where('status_gizi', 'stunting')->count();
-            $totalObesitas = $uniquePatients->where('status_gizi', 'obesitas')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Normal')->count();
+            $totalStunting = $uniquePatients->whereIn('kategori', ['Kurus', 'Sangat Kurus'])->count();
+            $totalObesitas = $uniquePatients->where('kategori', 'Gemuk')->count();
 
             // Determine the value category based on the counts of patients
             $value = $this->calculateValue($totalNormal, $totalStunting, $totalObesitas);
