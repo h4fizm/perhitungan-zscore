@@ -7,7 +7,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="{{ asset('style/assets/img/Favicon.png') }}">
   <title>
-    Antromaps Login Page
+    Sipenting Login Page
   </title>
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -27,7 +27,7 @@
   <nav class="navbar navbar-expand-lg position-absolute top-0 z-index-3 w-100 shadow-none my-3 navbar-transparent mt-4">
     <div class="container">
       <a class="navbar-brand  ms-lg-0 ms-3" href="">
-        <h5 class='font-weight-bolder text-white'>ANTROMAPS</h5>
+        <h5 class='font-weight-bolder text-white'>SIPENTING</h5>
       </a>
       <button class="navbar-toggler shadow-none ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon mt-2">
@@ -45,7 +45,7 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-5 text-center mx-auto">
-            <h1 class="text-white mb-2 mt-5">ANTROMAPS</h1>
+            <h1 class="text-white mb-2 mt-5">SIPENTING</h1>
           </div>
         </div>
       </div>
