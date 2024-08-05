@@ -149,8 +149,8 @@
                 if (dataToggle) {
                     // Get data
                     var data = message.payloadString.toString().split(",");
-                    var dataBeratBadan = data[0];
-                    var dataBeratBadan = data[1];
+                    var dataBeratBadan = parseFloat(data[0]);
+                    var dataBeratBadan = parseFloat(data[1]);
     
                     // Get input element
                     var beratBadanElement = document.getElementById('berat_badan');
