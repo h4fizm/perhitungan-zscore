@@ -152,6 +152,8 @@
                 }
             }
         }
+
+        connect();
     </script>
 </div>
 @endsection
