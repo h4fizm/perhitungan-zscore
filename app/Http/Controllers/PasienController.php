@@ -624,6 +624,7 @@ class PasienController extends Controller
             return redirect()->back()->with('error', 'Gagal memperbarui data pengukuran');
         }
     }
+    
     public function delete($id): RedirectResponse
     {
         try {

@@ -71,7 +71,7 @@
                          {{-- Button Kembali --}}
                         <a href="{{ route('detail-pengukuran', ['id' => $id]) }}" class="btn btn-secondary btn-sm" id="btnKembali">Kembali</a>
                         <button type="submit" class="btn btn-primary btn-sm float-end">Simpan</button>
-                        <button id="dataToggle" class="btn btn-warning btn-sm float-end">Hidupkan Data</button>
+                        <a class="btn btn-warning btn-sm" style="width:150px" id="dataToggle">Hidupkan Data</a>
                     </form>
                 </div>
             </div>
@@ -150,7 +150,7 @@
                     // Get data
                     var data = message.payloadString.toString().split(",");
                     var dataBeratBadan = parseFloat(data[0]);
-                    var dataBeratBadan = parseFloat(data[1]);
+                    var dataTinggiBadan = parseFloat(data[1]);
     
                     // Get input element
                     var beratBadanElement = document.getElementById('berat_badan');
@@ -158,7 +158,7 @@
     
                     // Change input value
                     beratBadanElement.value = dataBeratBadan.toFixed(2);
-                    tinggiBadanElement.value = dataBeratBadan.toFixed(2);
+                    tinggiBadanElement.value = dataTinggiBadan.toFixed(2);
                 }
             }
         }
