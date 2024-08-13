@@ -26,7 +26,7 @@
         <li class="nav-item">
           <a class="nav-link {{ request()->is('pemetaan-lokasi') ? 'active' : '' }}" href="{{ route('pemetaan-lokasi') }}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-             <i class="fas fa-map-marker-alt text-warning text-sm opacity-10"></i>
+              <i class="ni ni-calendar-grid-58 text-warning text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Gambar Pemetaan Lokasi</span>
           </a>
@@ -35,7 +35,7 @@
         <li class="nav-item">
            <a class="nav-link {{ request()->is('manajemen-lokasi') ? 'active' : '' }}" href="{{ route('manajemen-lokasi') }}">
             <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="fas fa-file text-warning text-sm opacity-10"></i>
+              <i class="ni ni-credit-card text-success text-sm opacity-10"></i>
             </div>
             <span class="nav-link-text ms-1">Manajemen Lokasi</span>
           </a>

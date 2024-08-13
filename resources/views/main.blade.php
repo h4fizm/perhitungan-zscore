@@ -22,8 +22,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- CSS Files -->
   <link id="pagestyle" href="{{ asset('style/assets/css/argon-dashboard.css?v=2.0.4')}}" rel="stylesheet" />
-  <!-- MQTT Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
   {{-- Bootstrap Icon --}}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css">
 </head>
@@ -49,6 +47,8 @@
   </main>
   
   <!--   Core JS Files   -->
+  <!-- MQTT Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
   <script src="{{ asset('style/assets/js/core/popper.min.js')}}"></script>
   <script src="{{ asset('style/assets/js/core/bootstrap.min.js')}}"></script>
   <script src="{{ asset('style/assets/js/plugins/perfect-scrollbar.min.js')}}"></script>
