@@ -175,6 +175,7 @@
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                 {{ $statusWH[$index] }}</td>
                                             <td class="align-middle text-center">
+                                                 @if (auth()->user()->role != 'Guest')
                                                 <div class="d-inline-flex flex-column align-items-center">
                                                     @if ($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
                                                         <a href="{{ route('edit-pengukuran', ['id' => $measurement->id]) }}"
@@ -191,6 +192,7 @@
                                                         </form>
                                                     @endif
                                                 </div>
+                                                 @endif
                                             </td>
                                         </tr>
                                     @endforeach
