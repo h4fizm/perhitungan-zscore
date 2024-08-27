@@ -40,7 +40,7 @@
                                 </li>
                                 <li>
                                     <p style="text-align: justify;">
-                                        <em>"Antromaps merupakan sistem pemantauan tumbuh kembang balita yang dilengkapi dengan pemetaan daerah untuk memantau potensi penyebaran stunting di daerah kecamatan Gubeng, Surabaya."</em>
+                                        <em>"SI PENTING merupakan sistem pemantauan tumbuh kembang balita yang dilengkapi dengan pemetaan daerah untuk memantau potensi penyebaran stunting di daerah kecamatan Gubeng, Surabaya."</em>
                                     </p>
                                 </li>
 

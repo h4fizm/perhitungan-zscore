@@ -61,6 +61,24 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="tempat_lahir" class="form-control-label">Tempat Lahir</label>
+                                    <input id="tempat_lahir" name="tempat_lahir" class="form-control" type="text" value="{{ $pasien->tempat_lahir }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nama_ortu" class="form-control-label">Nama Orang Tua</label>
+                                    <input id="nama_ortu" name="nama_ortu" class="form-control" type="text" value="{{ $pasien->nama_ortu }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email_ortu" class="form-control-label">Email Orang Tua</label>
+                                    <input id="email_ortu" name="email_ortu" class="form-control" type="email" value="{{ $pasien->email_ortu }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label for="alamat" class="form-control-label">Alamat</label>
                                     <input id="alamat" name="alamat" class="form-control" type="text" value="{{ $pasien->alamat }}" placeholder="Masukkan alamat">
                                 </div>

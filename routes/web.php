@@ -36,6 +36,10 @@ Route::post('/logout', function () {
 Route::middleware(['auth'])->group(function () {
     // Fungsi Menu Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Tampilkan Grafik Banyak Pasien
+    Route::get('/grafik', [LokasiController::class, 'showChart'])->name('grafik');
+
+    Route::get('/test-email', [LokasiController::class, 'testEmail'])->name('test-email');
 
     // Fungsi Menu Tampilan Pemetaan Lokasi 
     Route::get('/pemetaan-lokasi', [LokasiController::class, 'index'])->name('pemetaan-lokasi');

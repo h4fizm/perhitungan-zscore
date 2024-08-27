@@ -67,6 +67,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
     <script>
     // MQTT setup settings
     const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
@@ -134,26 +135,15 @@
                 `Received Message: ${message.payloadString.toString()} On topic: ${message.destinationName}`
             );
 
-            if (dataToggle) {
+            if (dataToggle && parseFloat(message.payloadString) > 0) {
                 if (message.destinationName === weightTopic) {
-                    dataBeratBadan = parseFloat(message.payloadString.split(":")[1].trim().replace("kg", ""));
-                } else if (message.destinationName === heightTopic) {
-                    dataTinggiBadan = parseFloat(message.payloadString.split(":")[1].trim().replace("cm", ""));
-                }
-
-                // Check if both data are received
-                if (dataBeratBadan !== null && dataTinggiBadan !== null) {
-                    // Get input element
+                    dataBeratBadan = parseFloat(message.payloadString);
                     var beratBadanElement = document.getElementById('berat_badan');
-                    var tinggiBadanElement = document.getElementById('tinggi_badan');
-
-                    // Change input value
                     beratBadanElement.value = dataBeratBadan.toFixed(2);
+                } else if (message.destinationName === heightTopic) {
+                    dataTinggiBadan = parseFloat(message.payloadString);
+                    var tinggiBadanElement = document.getElementById('tinggi_badan');
                     tinggiBadanElement.value = dataTinggiBadan.toFixed(2);
-
-                    // Reset for next message
-                    dataBeratBadan = null;
-                    dataTinggiBadan = null;
                 }
             }
         }

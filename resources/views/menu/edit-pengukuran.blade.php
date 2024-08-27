@@ -72,98 +72,95 @@
                         <a href="{{ route('detail-pengukuran', ['id' => $id]) }}" class="btn btn-secondary btn-sm" id="btnKembali">Kembali</a>
                         <button type="submit" class="btn btn-primary btn-sm float-end">Simpan</button>
                         <a class="btn btn-warning btn-sm" style="width:150px" id="dataToggle">Hidupkan Data</a>
+                        <p>* Pada halaman edit, data harus dihidupkan manual</p>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
     <script>
-        // MQTT setup settings
-        const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
-        const clientId = 'publish-' + Math.random().toString(16).substr(2, 8);
-        const topic = 'zscore/bbtb';
+    // MQTT setup settings
+    const brokerUrl = 'wss://broker.emqx.io:8084/mqtt';
+    const clientId = 'publish-' + Math.random().toString(16).substr(2, 8);
 
-        // Data settings
-        var dataToggle = false; // Default for edit data
+    const weightTopic = 'sensor/weight';
+    const heightTopic = 'sensor/height';
 
-        function toggleData() {
-            // Toggle the boolean variable
-            dataToggle = !dataToggle;
-            
-            // Get the button element
-            const button = document.getElementById('dataToggle');
-            
-            // Change the button text based on the boolean variable
-            if (dataToggle) {
-                button.textContent = 'Matikan Data';
-            } else {
-                button.textContent = 'Hidupkan Data';
+    var dataBeratBadan = null;
+    var dataTinggiBadan = null;
+    var dataToggle = false; // Default for edit data
+
+    function toggleData() {
+        // Toggle the boolean variable
+        dataToggle = !dataToggle;
+
+        // Get the button element
+        const button = document.getElementById('dataToggle');
+
+        // Change the button text based on the boolean variable
+        if (dataToggle) {
+            button.textContent = 'Matikan Data';
+        } else {
+            button.textContent = 'Hidupkan Data';
+        }
+    }
+
+    // Add event listener to the button
+    document.getElementById('dataToggle').addEventListener('click', toggleData);
+
+    function connect() {
+        const client = new Paho.Client(brokerUrl, clientId);
+
+        client.onConnectionLost = onConnectionLost;
+        client.onMessageArrived = onMessageArrived;
+
+        const options = {
+            onSuccess: onConnect,
+            onFailure: onFailure,
+            useSSL: true,
+            timeout: 3,
+            reconnect: true
+        };
+
+        client.connect(options);
+
+        function onConnect() {
+            console.log('Connected to MQTT broker');
+            client.subscribe(weightTopic, { qos: 0 });
+            client.subscribe(heightTopic, { qos: 0 });
+        }
+
+        function onFailure(err) {
+            console.error('Connection failed: ', err);
+        }
+
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0) {
+                console.error('Connection lost: ', responseObject.errorMessage);
             }
         }
 
-        // Add event listener to the button
-        document.getElementById('dataToggle').addEventListener('click', toggleData);
+        function onMessageArrived(message) {
+            console.log(
+                `Received Message: ${message.payloadString.toString()} On topic: ${message.destinationName}`
+            );
 
-        function connect() {
-            const client = new Paho.Client(brokerUrl, clientId);
-
-            client.onConnectionLost = onConnectionLost;
-            client.onMessageArrived = onMessageArrived;
-
-            const options = {
-                onSuccess: onConnect,
-                onFailure: onFailure,
-                useSSL: true,
-                timeout: 3,
-                reconnect: true
-            };
-
-            client.connect(options);
-
-            function onConnect() {
-                console.log('Connected to MQTT broker');
-                client.subscribe(topic, { qos: 0 }, (err) => {
-                    if (err) {
-                        console.error('Subscription failed: ', err);
-                    } else {
-                        console.log(`Subscribed to topic: ${topic}`);
-                    }
-                });
-            }
-
-            function onFailure(err) {
-                console.error('Connection failed: ', err);
-            }
-
-            function onConnectionLost(responseObject) {
-                if (responseObject.errorCode !== 0) {
-                    console.error('Connection lost: ', responseObject.errorMessage);
-                }
-            }
-
-            function onMessageArrived(message) {
-                console.log(
-                    `Received Message: ${message.payloadString.toString()} On topic: ${topic}`
-                );
-
-                if (dataToggle) {
-                    // Get data
-                    var data = message.payloadString.toString().split(",");
-                    var dataBeratBadan = parseFloat(data[0]);
-                    var dataTinggiBadan = parseFloat(data[1]);
-    
-                    // Get input element
+            if (dataToggle && parseFloat(message.payloadString) > 0) {
+                if (message.destinationName === weightTopic) {
+                    dataBeratBadan = parseFloat(message.payloadString);
                     var beratBadanElement = document.getElementById('berat_badan');
-                    var tinggiBadanElement = document.getElementById('tinggi_badan');
-    
-                    // Change input value
                     beratBadanElement.value = dataBeratBadan.toFixed(2);
+                } else if (message.destinationName === heightTopic) {
+                    dataTinggiBadan = parseFloat(message.payloadString);
+                    var tinggiBadanElement = document.getElementById('tinggi_badan');
                     tinggiBadanElement.value = dataTinggiBadan.toFixed(2);
                 }
             }
         }
+    }
 
-        connect();
-    </script>
+    connect();
+</script>
 </div>
 @endsection

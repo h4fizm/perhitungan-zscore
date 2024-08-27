@@ -12,6 +12,51 @@ use Carbon\Carbon;
 
 class LokasiController extends Controller
 {
+    public function showChart()
+    {
+        // Mengambil data kelurahan dari database
+        $locations = Location::all();
+
+        // Menyiapkan array untuk menyimpan data persentase pasien dan ID lokasi
+        $kelurahanNames = [];
+        $kelurahanIds = [];
+        $obesitasData = [];
+        $stuntingData = [];
+        $normalData = [];
+
+        foreach ($locations as $location) {
+            // Mengambil pasien unik berdasarkan NIK terbaru untuk setiap kelurahan
+            $uniquePatients = Pasien::whereIn('id', function ($query) use ($location) {
+                $query->select(DB::raw('MAX(id)'))
+                    ->from('pasien')
+                    ->where('id_location', $location->id)
+                    ->groupBy('nik');
+            })->get();
+
+            // Menghitung total pasien dan jumlah pasien per kategori
+            $totalPasien = $uniquePatients->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Normal')->count();
+            $totalStunting = $uniquePatients->whereIn('kategori', ['Kurus', 'Sangat Kurus'])->count();
+            $totalObesitas = $uniquePatients->where('kategori', 'Gemuk')->count();
+
+            // Menghitung persentase berdasarkan kategori gizi
+            $obesitasPercent = $totalPasien > 0 ? ($totalObesitas / $totalPasien) * 100 : 0;
+            $stuntingPercent = $totalPasien > 0 ? ($totalStunting / $totalPasien) * 100 : 0;
+            $normalPercent = $totalPasien > 0 ? ($totalNormal / $totalPasien) * 100 : 0;
+
+            // Menyimpan data ke array
+            $kelurahanNames[] = $location->name_location;
+            $kelurahanIds[] = $location->id; // Menyimpan ID lokasi
+            $obesitasData[] = $obesitasPercent;
+            $stuntingData[] = $stuntingPercent;
+            $normalData[] = $normalPercent;
+        }
+
+        // Passing data ke view
+        return view('menu.grafik', compact('kelurahanNames', 'kelurahanIds', 'obesitasData', 'stuntingData', 'normalData'));
+    }
+
+
     public function index()
     {
         $locations = Location::all();
@@ -51,9 +96,9 @@ class LokasiController extends Controller
         }
 
         // // Send email if there are locations with high stunting rates and the email hasn't been sent yet for this condition
-        // if (!empty($stuntingLocations)) {
-        //     $this->sendStuntingWarningEmailOnce($stuntingLocations);
-        // }
+        if (!empty($stuntingLocations)) {
+            $this->sendStuntingWarningEmailOnce($stuntingLocations, "!kirim");
+        }
 
         return view('menu.pemetaan-lokasi', compact('locations'));
     }
@@ -97,9 +142,9 @@ class LokasiController extends Controller
         }
 
         // Send email if there are locations with high stunting rates and the email hasn't been sent yet for this condition
-        // if (!empty($stuntingLocations)) {
-        //     $this->sendStuntingWarningEmailOnce($stuntingLocations);
-        // }
+        if (!empty($stuntingLocations)) {
+            $this->sendStuntingWarningEmailOnce($stuntingLocations, "!kirim");
+        }
 
         return view('menu.manajemen-lokasi', compact('locations'));
     }
@@ -118,22 +163,52 @@ class LokasiController extends Controller
     }
 
     // New function to send stunting warning email once based on latest condition
-    // private function sendStuntingWarningEmailOnce($stuntingLocations)
-    // {
-    //     $cacheKey = 'last_stunting_email_locations';
-    //     $lastStuntingEmailLocations = Cache::get($cacheKey, []);
+    private function sendStuntingWarningEmailOnce($stuntingLocations, $forceSend)
+    {
+        $cacheKey = 'last_stunting_email_locations';
+        $lastStuntingEmailLocations = Cache::get($cacheKey, []);
 
-    //     // Check if the current stunting locations are different from the last cached locations
-    //     if (array_diff($stuntingLocations, $lastStuntingEmailLocations) || array_diff($lastStuntingEmailLocations, $stuntingLocations)) {
-    //         $emailContent = "Yth. Bapak/Ibu,\n\nKami ingin memberitahukan bahwa jumlah pasien dengan status stunting telah mencapai tingkat yang tinggi di beberapa kelurahan. Berikut adalah daftar kelurahan yang memiliki status stunting tinggi:\n\n" . implode("\n", $stuntingLocations) . "\n\nKami sangat mengkhawatirkan kondisi ini dan berharap dapat segera mengambil tindakan yang diperlukan untuk menanggulangi masalah stunting di wilayah ini.\n\nTerima kasih atas perhatian dan kerjasamanya.\n\nSalam,\nTim Kesehatan";
+        // Check if the current stunting locations are different from the last cached locations
+        if (array_diff($stuntingLocations, $lastStuntingEmailLocations) || array_diff($lastStuntingEmailLocations, $stuntingLocations) || $forceSend == "kirim") {
+            $emailContent = "Yth. Bapak/Ibu,\n\nKami ingin memberitahukan bahwa jumlah pasien dengan status stunting telah mencapai tingkat yang tinggi di beberapa kelurahan. Berikut adalah daftar kelurahan yang memiliki status stunting dan obesitas tinggi:\n\n" . implode("\n", $stuntingLocations) . "\n\nKami sangat mengkhawatirkan kondisi ini dan berharap dapat segera mengambil tindakan yang diperlukan untuk menanggulangi masalah stunting di wilayah ini.\n\nTerima kasih atas perhatian dan kerjasamanya.\n\nSalam,\nTim Kesehatan";
+            
+            $uniqueEmails = Pasien::distinct()->pluck('email_ortu')->toArray(); // Email orang tua
+            $additionalRecipients  = ['humamaziz03@gmail.com']; // Email tambahan, di luar email orang tua
+            $recipients = array_filter(array_merge($uniqueEmails, $additionalRecipients));
 
-    //         Mail::raw($emailContent, function ($message) {
-    //             $message->to('farelhafiz52@gmail.com')
-    //                 ->subject('Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
-    //         });
+            Mail::raw($emailContent, function ($message) use ($recipients) {
+                $message->to($recipients)
+                    ->subject('Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
+            });
 
-    //         // Update the last stunting email locations in cache
-    //         Cache::put($cacheKey, $stuntingLocations, now()->addDay()); // Cache for 1 day
-    //     }
-    // }
+            // Update the last stunting email locations in cache
+            Cache::put($cacheKey, $stuntingLocations, now()->addDay()); // Cache for 1 day
+        }
+    }
+
+    public function testEmail()
+    {
+        // $cacheKey = 'last_stunting_email_locations';
+        // $lastStuntingEmailLocations = Cache::get($cacheKey, []);
+
+        // Check if the current stunting locations are different from the last cached locations
+        if (1 == 1) {
+            $emailContent = "Yth. Bapak/Ibu,\n\nKami ingin memberitahukan bahwa jumlah pasien dengan status stunting telah mencapai tingkat yang tinggi di beberapa kelurahan. Berikut adalah daftar kelurahan yang memiliki status stunting dan obesitas tinggi:\n\n" . "TESSS TOKKK" . "\n\nKami sangat mengkhawatirkan kondisi ini dan berharap dapat segera mengambil tindakan yang diperlukan untuk menanggulangi masalah stunting di wilayah ini.\n\nTerima kasih atas perhatian dan kerjasamanya.\n\nSalam,\nTim Kesehatan";
+            
+            // $additionalRecipients  = ['savage.kuosong@gmail.com', 'humamaziz03@gmail.com', 'justdella.24@gmail.com'];
+            $uniqueEmails = Pasien::distinct()->pluck('email_ortu')->toArray();
+            $additionalRecipients  = ['humamaziz03@gmail.com'];
+            $recipients = array_filter(array_merge($uniqueEmails, $additionalRecipients));
+
+            Mail::raw($emailContent, function ($message) use ($recipients) {
+                $message->to($recipients)
+                    ->subject('TEST 2 - Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
+            });
+
+            return response('Hello, this is a simple text response.');
+
+            // Update the last stunting email locations in cache
+            // Cache::put($cacheKey, $stuntingLocations, now()->addDay()); // Cache for 1 day
+        }
+    }
 }

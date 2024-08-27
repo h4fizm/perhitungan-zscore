@@ -24,8 +24,10 @@
                             <table id="dataTable" class="table align-items-center mb-0">
                                 <thead>
                                     <tr>
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
                                         <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-5">NIK</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Pasien</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Ortu</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jenis Kelamin</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Umur</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lokasi Faskes</th>
@@ -35,10 +37,14 @@
                                 </thead>
                                 <tbody>
                                     @if ($pasien->isNotEmpty())
-                                        @foreach ($pasien as $data)
+                                        @foreach ($pasien as $index => $data)
                                             <tr>
+                                                <td class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ ($pasien->currentPage() - 1) * $pasien->perPage() + $index + 1 }}
+                                                </td>
                                                 <td class="align-middle text-center text-secondary font-weight-bold text-xs">{{ $data->nik }}</td>
                                                 <td class="text-secondary font-weight-bold text-xs">{{ $data->nama }}</td>
+                                                <td class="text-secondary font-weight-bold text-xs">{{ $data->nama_ortu }}</td>
                                                 <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                     @if ($data->jenis_kelamin == 'laki-laki')
                                                         <span class="badge bg-primary">Laki-laki</span>

@@ -39,7 +39,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="nama" class="form-control-label">Nama</label>
-                                    <input id="nama" name="nama" class="form-control" type="text" placeholder="Masukkan nama Anda">
+                                    <input id="nama" name="nama" class="form-control" type="text" placeholder="Masukkan nama pasien">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -56,6 +56,24 @@
                                 <div class="form-group">
                                     <label for="tanggal_lahir" class="form-control-label">Tanggal Lahir</label>
                                     <input id="tanggal_lahir" name="tanggal_lahir" class="form-control" type="date">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="tempat_lahir" class="form-control-label">Tempat Lahir</label>
+                                    <input id="tempat_lahir" name="tempat_lahir" class="form-control" type="text" placeholder="Masukkan tempat lahir">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nama_ortu" class="form-control-label">Nama Orang Tua</label>
+                                    <input id="nama_ortu" name="nama_ortu" class="form-control" type="text" placeholder="Masukkan nama orang tua">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email_ortu" class="form-control-label">Email Orang Tua</label>
+                                    <input id="email_ortu" name="email_ortu" class="form-control" type="email" placeholder="Masukkan email orang tua">
                                 </div>
                             </div>
                             <div class="col-md-6">

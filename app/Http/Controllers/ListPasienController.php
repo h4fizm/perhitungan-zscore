@@ -101,11 +101,14 @@ class ListPasienController extends Controller
         $umur = $tanggal_lahir->diffInMonths(Carbon::now());
 
         // Simpan data pasien ke database
-        Pasien::create([
+        $pasien = Pasien::create([
             'nik' => $request->nik,
             'nama' => $request->nama,
             'jenis_kelamin' => $request->jenis_kelamin,
             'tanggal_lahir' => $request->tanggal_lahir,
+            'tempat_lahir' => $request->tempat_lahir,
+            'nama_ortu' => $request->nama_ortu,
+            'email_ortu' => $request->email_ortu,
             'umur' => $umur,
             'alamat' => $request->alamat,
             'id_location' => $request->faskes,
@@ -116,7 +119,8 @@ class ListPasienController extends Controller
             'status_tinggi' => 'normal', // Nilai default untuk status tinggi
         ]);
 
-        return redirect()->route('tambah-pasien')->with('success', 'Data pasien berhasil ditambahkan');
+        // return redirect()->route('tambah-pasien')->with('success', 'Data pasien berhasil ditambahkan');
+        return redirect()->route('tambah-pengukuran', ['id' => $pasien->id])->with('success', 'Data pasien baru berhasil ditambahkan, silahkan tambahkan data pengukuran pertama.');
     }
     public function edit($id)
     {
@@ -161,6 +165,9 @@ class ListPasienController extends Controller
                 'nama' => $request->nama,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,
+                'tempat_lahir' => $request->tempat_lahir,
+                'nama_ortu' => $request->nama_ortu,
+                'email_ortu' => $request->email_ortu,
                 'umur' => $umur,
                 'alamat' => $request->alamat,
                 'id_location' => $request->faskes,
@@ -172,6 +179,9 @@ class ListPasienController extends Controller
                 'nama' => $request->nama,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,
+                'tempat_lahir' => $request->tempat_lahir,
+                'nama_ortu' => $request->nama_ortu,
+                'email_ortu' => $request->email_ortu,
                 'umur' => $umur,
                 'alamat' => $request->alamat,
                 'id_location' => $request->faskes,

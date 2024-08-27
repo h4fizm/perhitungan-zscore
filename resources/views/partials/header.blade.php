@@ -8,7 +8,11 @@
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
             <div class="ms-md-auto pe-md-3 d-flex align-items-center">
-                {{-- Kolom Search --}}
+               <li class="nav-item d-flex align-items-center">
+                    <a href="{{ route('grafik') }}" class="nav-link text-white font-weight-bold px-0">
+                        <i class="bi bi-bar-chart me-sm-1"></i>
+                    </a>
+                </li>
             </div>
             <ul class="navbar-nav  justify-content-end">
                 <li class="nav-item d-flex align-items-center">

@@ -57,10 +57,11 @@
                             </div>
                             <a href="{{ route('list-pasien') }}" class="btn btn-secondary btn-sm">Kembali</a>
                             @if (auth()->user()->role != 'Guest')
-                            <button type="button" class="btn btn-primary btn-sm float-end"
-                                onclick="window.location='{{ route('tambah-pengukuran', ['id' => $id]) }}'">+ Tambah Data
-                                Pengukuran</button>
+                            <button type="button" class="btn btn-primary btn-sm float-end" style="margin-left: 5px"
+                            onclick="window.location='{{ route('tambah-pengukuran', ['id' => $id]) }}'">+ Tambah Data
+                            Pengukuran</button>
                             @endif
+                            <a onclick="window.print();" class="btn btn-warning btn-sm float-end">Print</a>
                         </form>
                     </div>
                 </div>
@@ -150,7 +151,7 @@
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Kategori</th>
                                         <th
-                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 no-print">
                                             Aksi</th>
                                     </tr>
                                 </thead>
@@ -174,7 +175,8 @@
                                                 {{ $statusTinggi[$index] }}</td>
                                             <td class="align-middle text-center text-secondary font-weight-bold text-xs">
                                                 {{ $statusWH[$index] }}</td>
-                                            <td class="align-middle text-center">
+                                            <td class="align-middle text-center no-print">
+                                                 @if (auth()->user()->role != 'Guest')
                                                 <div class="d-inline-flex flex-column align-items-center">
                                                     @if ($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
                                                         <a href="{{ route('edit-pengukuran', ['id' => $measurement->id]) }}"
@@ -191,6 +193,7 @@
                                                         </form>
                                                     @endif
                                                 </div>
+                                                 @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -609,3 +612,49 @@
         new Chart(wHeightCtx, weightToHeightConfig);
     };
 </script>
+
+<style>
+    @media print {
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .no-print, button, .btn, .footer, #navbar {
+            display: none !important;
+        }
+
+        .card {
+            page-break-inside: avoid; /* Avoid breaking the charts across pages */
+        }
+
+        .card-header {
+            text-align: center; /* Optional: Align text to center for better appearance */
+        }
+
+        /* Table settings */
+
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        table {
+            width: 100% !important;
+            font-size: 10px; /* Adjust as necessary */
+        }
+
+        th, td {
+            padding: 4px !important;
+        }
+
+        tr {
+            page-break-inside: avoid !important;
+        }
+
+    }
+</style>
