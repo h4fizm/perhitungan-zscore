@@ -232,7 +232,7 @@ class PasienController extends Controller
         if ($ZScoreWH > 1 && $ZScoreWH <= 2)
             return "Beresiko gizi lebih";
         if ($ZScoreWH > -2 && $ZScoreWH <= 1)
-            return "Gizi normal";
+            return "Gizi baik";
         if ($ZScoreWH >= -3 && $ZScoreWH <= -2)
             return "Gizi kurang";
         return "Gizi buruk";
