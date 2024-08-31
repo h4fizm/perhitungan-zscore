@@ -32,6 +32,7 @@
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Umur</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Lokasi Faskes</th>
                                         <!-- <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status Pasien</th> -->
+                                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                                     </tr>
                                 </thead>
@@ -57,6 +58,15 @@
                                                     <a href="{{ route('list-pasien-lokasi', ['id' => $data->location->id]) }}">{{ $data->location->name_location }}</a>
                                                 </td>
                                                 <!-- <td class="align-middle text-center text-secondary font-weight-bold text-xs">XXXXXX</td> -->
+                                                <td class="text-center">
+                                                    @if ($data->kategori == 'Gizi baik')
+                                                        <span class="badge bg-gradient-success">NORMAL</span>
+                                                    @elseif (in_array($data->kategori, ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']))
+                                                        <span class="badge bg-gradient-warning">OBESITAS</span>
+                                                    @elseif (in_array($data->kategori, ['Gizi kurang', 'Gizi buruk']))
+                                                        <span class="badge bg-gradient-danger">STUNTING</span>
+                                                    @endif
+                                                </td>
                                                 <td class="align-middle text-center">
                                                     <div class="d-inline-flex flex-column align-items-center">
                                                         <a href="{{ route('detail-pengukuran', $data->id) }}"

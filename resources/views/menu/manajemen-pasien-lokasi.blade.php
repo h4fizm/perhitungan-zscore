@@ -36,7 +36,7 @@
                         <div class="d-flex justify-content-between">
                             <h6>Daftar Pasien di {{ $location->name_location }}</h6>
                             @if (auth()->user()->role != 'Guest')
-                            <a href="{{ route('tambah-pasien') }}" class="btn btn-primary"> + Tambah Pasien</a>
+                                <a href="{{ route('tambah-pasien') }}" class="btn btn-primary"> + Tambah Pasien</a>
                             @endif
                         </div>
                     </div>
@@ -46,11 +46,17 @@
                                 <thead>
                                     <tr>
                                         <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            No.</th>
+                                        <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-5">
                                             NIK</th>
                                         <th
                                             class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                                            Nama</th>
+                                            Nama Pasien</th>
+                                        <th
+                                            class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                            Nama Ortu</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Jenis Kelamin</th>
@@ -62,51 +68,79 @@
                                             Lokasi Faskes</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Status</th>
+                                        <th
+                                            class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                             Aksi</th>
                                     </tr>
                                 </thead>
-                                    <tbody>
-                                        @if ($pasien->isNotEmpty())
-                                            @foreach ($pasien as $data)
-                                                <tr>
-                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        {{ $data->nik }}</td>
-                                                    <td class="text-secondary font-weight-bold text-xs">{{ $data->nama }}</td>
-                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        @if ($data->jenis_kelamin == 'laki-laki')
-                                                            <span class="badge bg-primary">Laki-laki</span>
-                                                        @else
-                                                            <span class="badge bg-danger">Perempuan</span>
-                                                        @endif
-                                                    </td>
-                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        {{ $data->umur }} Bulan</td>
-                                                    <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        {{ $data->location->name_location }}</td>
-                                                    <td class="align-middle text-center">
-                                                        <div class="d-inline-flex flex-column align-items-center">
-                                                            <a href="{{ route('detail-pengukuran', $data->id) }}" class="btn btn-info btn-sm mb-2"
-                                                                style="width: 100px; padding: 5px;" data-toggle="tooltip" data-original-title="Info user">INFO</a>
-                                                            <a href="{{ route('edit-pasien', $data->id) }}" class="btn btn-warning btn-sm mb-2"
-                                                                style="width: 100px; padding: 5px;" data-toggle="tooltip" data-original-title="Edit user">EDIT</a>
-                                                            <form id="delete-form-{{ $data->id }}" action="{{ route('list-pasien.destroy', $data->id) }}"
-                                                                method="POST">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="button" class="btn btn-danger btn-sm delete-btn" style="width: 100px; padding: 5px;"
-                                                                        data-user-id="{{ $data->id }}">HAPUS</button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
+                                <tbody>
+                                    @if ($pasien->isNotEmpty())
+                                        @foreach ($pasien as $index => $data)
                                             <tr>
-                                                <td colspan="7" class="text-center text-secondary font-weight-bold text-xs">
-                                                    Tidak ada data pasien pada lokasi yang dipilih</td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ ($pasien->currentPage() - 1) * $pasien->perPage() + $index + 1 }}
+                                                </td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ $data->nik }}</td>
+                                                <td class="text-secondary font-weight-bold text-xs">{{ $data->nama }}</td>
+                                                <td class="text-secondary font-weight-bold text-xs">{{ $data->nama_ortu }}
+                                                </td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    @if ($data->jenis_kelamin == 'laki-laki')
+                                                        <span class="badge bg-primary">Laki-laki</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Perempuan</span>
+                                                    @endif
+                                                </td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ $data->umur }} Bulan</td>
+                                                <td
+                                                    class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                    {{ $data->location->name_location }}</td>
+                                                <td class="text-center">
+                                                    @if ($data->kategori == 'Gizi baik')
+                                                        <span class="badge bg-gradient-success">NORMAL</span>
+                                                    @elseif (in_array($data->kategori, ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']))
+                                                        <span class="badge bg-gradient-warning">OBESITAS</span>
+                                                    @elseif (in_array($data->kategori, ['Gizi kurang', 'Gizi buruk']))
+                                                        <span class="badge bg-gradient-danger">STUNTING</span>
+                                                    @endif
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <div class="d-inline-flex flex-column align-items-center">
+                                                        <a href="{{ route('detail-pengukuran', $data->id) }}"
+                                                            class="btn btn-info btn-sm mb-2"
+                                                            style="width: 100px; padding: 5px;" data-toggle="tooltip"
+                                                            data-original-title="Info user">INFO</a>
+                                                        <a href="{{ route('edit-pasien', $data->id) }}"
+                                                            class="btn btn-warning btn-sm mb-2"
+                                                            style="width: 100px; padding: 5px;" data-toggle="tooltip"
+                                                            data-original-title="Edit user">EDIT</a>
+                                                        <form id="delete-form-{{ $data->id }}"
+                                                            action="{{ route('list-pasien.destroy', $data->id) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button" class="btn btn-danger btn-sm delete-btn"
+                                                                style="width: 100px; padding: 5px;"
+                                                                data-user-id="{{ $data->id }}">HAPUS</button>
+                                                        </form>
+                                                    </div>
+                                                </td>
                                             </tr>
-                                        @endif
-                                    </tbody>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="7" class="text-center text-secondary font-weight-bold text-xs">
+                                                Tidak ada data pasien pada lokasi yang dipilih</td>
+                                        </tr>
+                                    @endif
+                                </tbody>
                             </table>
                         </div>
                     </div>

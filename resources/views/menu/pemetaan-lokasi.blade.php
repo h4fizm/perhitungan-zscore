@@ -49,11 +49,18 @@
                     totalObesitas += {{ $location->jumlah_obesitas }};
                 }
             @endforeach
-
+            
+            var userRole = "{{ auth()->user()->role }}"
+            var userLocationId = "{{ auth()->user()->id_location }}"
             var buttonHTML = '';
-            @if (auth()->user()->role != 'Operator')
+
+            if (userRole == "Admin") {
                 buttonHTML = `<button class="btn btn-primary" onclick="showDetails(${id})">Informasi Pasien</button>`;
-            @endif
+            } else if (userRole == "Operator") {
+                if (userLocationId == id) {
+                    buttonHTML = `<button class="btn btn-primary" onclick="showDetails(${id})">Informasi Pasien</button>`;
+                }
+            }
 
             return `<div class="popup-content">
                 <div style="margin-bottom: 15px; font-size: 16px; font-weight: bold;">${name}</div>

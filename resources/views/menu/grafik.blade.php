@@ -37,6 +37,9 @@
     var stuntingPercent = @json($stuntingData);
     var normalPercent = @json($normalData);
 
+    var userRole = "{{ auth()->user()->role }}"
+    var userLocationId = "{{ auth()->user()->id_location }}"
+
     var kelurahanChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -71,8 +74,16 @@
                 if (activePoints.length > 0) {
                     var index = activePoints[0].index;
                     var locationId = kelurahanIds[index];
-                    var url = `{{ url('/list-pasien/${locationId}') }}`;
-                    window.location.href = url; // Redirect to the corresponding URL
+
+                    if (userRole == "Admin") {
+                        var url = `{{ url('/list-pasien/${locationId}') }}`;
+                        window.location.href = url; // Redirect to the corresponding URL
+                    } else if (userRole == "Operator") {
+                        if (userLocationId == locationId) {
+                            var url = `{{ url('/list-pasien/${locationId}') }}`;
+                            window.location.href = url; // Redirect to the corresponding URL
+                        }
+                    }
                 }
             },
             scales: {

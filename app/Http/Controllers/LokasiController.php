@@ -36,7 +36,7 @@ class LokasiController extends Controller
 
             // Menghitung total pasien dan jumlah pasien per kategori
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('kategori', 'Gizi normal')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Gizi baik')->count();
             $totalStunting = $uniquePatients->whereIn('kategori', ['Gizi kurang', 'Gizi buruk'])->count();
             $totalObesitas = $uniquePatients->whereIn('kategori', ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas'])->count();
 
@@ -74,7 +74,7 @@ class LokasiController extends Controller
 
             // Calculate totals based on unique patients
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('kategori', 'Gizi normal')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Gizi baik')->count();
             $totalStunting = $uniquePatients->whereIn('kategori', ['Gizi kurang', 'Gizi buruk'])->count();
             $totalObesitas = $uniquePatients->whereIn('kategori', ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas'])->count();
 
@@ -112,9 +112,9 @@ class LokasiController extends Controller
 
             // Calculate totals based on unique patients
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('kategori', 'Normal')->count();
-            $totalStunting = $uniquePatients->whereIn('kategori', ['Kurus', 'Sangat Kurus'])->count();
-            $totalObesitas = $uniquePatients->where('kategori', 'Gemuk')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Gizi baik')->count();
+            $totalStunting = $uniquePatients->whereIn('kategori', ['Gizi kurang', 'Gizi buruk'])->count();
+            $totalObesitas = $uniquePatients->whereIn('kategori', ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas'])->count();
 
             // Determine the value category based on the counts of patients
             $value = $this->calculateValue($totalNormal, $totalStunting, $totalObesitas);
