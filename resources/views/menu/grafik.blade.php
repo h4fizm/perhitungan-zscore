@@ -45,15 +45,15 @@
                 {
                     label: 'Obesitas',
                     data: obesitasPercent,
-                    backgroundColor: 'rgba(153, 0, 0, 0.8)', // Dark Red
-                    borderColor: 'rgba(153, 0, 0, 1)',
+                    backgroundColor: 'rgba(204, 153, 0, 0.8)', // Dark Yellow
+                    borderColor: 'rgba(204, 153, 0, 1)',
                     borderWidth: 1
                 },
                 {
                     label: 'Stunting',
                     data: stuntingPercent,
-                    backgroundColor: 'rgba(204, 153, 0, 0.8)', // Dark Yellow
-                    borderColor: 'rgba(204, 153, 0, 1)',
+                    backgroundColor: 'rgba(153, 0, 0, 0.8)', // Dark Red
+                    borderColor: 'rgba(153, 0, 0, 1)',
                     borderWidth: 1
                 },
                 {

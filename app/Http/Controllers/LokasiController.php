@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Location;
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Pasien;
+use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 class LokasiController extends Controller
 {
@@ -35,9 +36,9 @@ class LokasiController extends Controller
 
             // Menghitung total pasien dan jumlah pasien per kategori
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('kategori', 'Normal')->count();
-            $totalStunting = $uniquePatients->whereIn('kategori', ['Kurus', 'Sangat Kurus'])->count();
-            $totalObesitas = $uniquePatients->where('kategori', 'Gemuk')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Gizi normal')->count();
+            $totalStunting = $uniquePatients->whereIn('kategori', ['Gizi kurang', 'Gizi buruk'])->count();
+            $totalObesitas = $uniquePatients->whereIn('kategori', ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas'])->count();
 
             // Menghitung persentase berdasarkan kategori gizi
             $obesitasPercent = $totalPasien > 0 ? ($totalObesitas / $totalPasien) * 100 : 0;
@@ -73,9 +74,11 @@ class LokasiController extends Controller
 
             // Calculate totals based on unique patients
             $totalPasien = $uniquePatients->count();
-            $totalNormal = $uniquePatients->where('kategori', 'Normal')->count();
-            $totalStunting = $uniquePatients->whereIn('kategori', ['Kurus', 'Sangat Kurus'])->count();
-            $totalObesitas = $uniquePatients->where('kategori', 'Gemuk')->count();
+            $totalNormal = $uniquePatients->where('kategori', 'Gizi normal')->count();
+            $totalStunting = $uniquePatients->whereIn('kategori', ['Gizi kurang', 'Gizi buruk'])->count();
+            $totalObesitas = $uniquePatients->whereIn('kategori', ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas'])->count();
+
+            // dd($uniquePatients);
 
             // Determine the value category based on the counts of patients
             $value = $this->calculateValue($totalNormal, $totalStunting, $totalObesitas);
@@ -88,16 +91,6 @@ class LokasiController extends Controller
             $location->jumlah_stunting = $totalStunting;
             $location->jumlah_normal = $totalNormal;
             $location->jumlah_obesitas = $totalObesitas;
-
-            // Collect locations with high stunting rates
-            if ($value == 1) {
-                $stuntingLocations[] = $location->name_location;
-            }
-        }
-
-        // // Send email if there are locations with high stunting rates and the email hasn't been sent yet for this condition
-        if (!empty($stuntingLocations)) {
-            $this->sendStuntingWarningEmailOnce($stuntingLocations, "!kirim");
         }
 
         return view('menu.pemetaan-lokasi', compact('locations'));
@@ -134,16 +127,6 @@ class LokasiController extends Controller
             $location->jumlah_stunting = $totalStunting;
             $location->jumlah_normal = $totalNormal;
             $location->jumlah_obesitas = $totalObesitas;
-
-            // Collect locations with high stunting rates
-            if ($value == 1) {
-                $stuntingLocations[] = $location->name_location;
-            }
-        }
-
-        // Send email if there are locations with high stunting rates and the email hasn't been sent yet for this condition
-        if (!empty($stuntingLocations)) {
-            $this->sendStuntingWarningEmailOnce($stuntingLocations, "!kirim");
         }
 
         return view('menu.manajemen-lokasi', compact('locations'));
@@ -151,9 +134,9 @@ class LokasiController extends Controller
 
 
     // New function to calculate the value based on counts of patients
-    private function calculateValue($totalNormal, $totalStunting, $totalObesitas)
+    public static function calculateValue($totalNormal, $totalStunting, $totalObesitas)
     {
-        if ($totalNormal > $totalStunting && $totalNormal > $totalObesitas) {
+        if (($totalNormal > $totalStunting && $totalNormal > $totalObesitas) || $totalNormal + $totalObesitas + $totalStunting == 0) {
             return 3; // Low
         } elseif ($totalNormal == $totalStunting || $totalNormal == $totalObesitas) {
             return 2; // Medium
@@ -162,21 +145,36 @@ class LokasiController extends Controller
         }
     }
 
+    // New function to calculate the stunting severity based on counts of patients
+    public static function calculateStuntingSeverity($totalNormal, $totalStunting)
+    {
+        if ($totalNormal > $totalStunting || $totalNormal + $totalStunting == 0) {
+            return 3; // Low
+        } else {
+            return 1; // High
+        }
+    }
+
     // New function to send stunting warning email once based on latest condition
-    private function sendStuntingWarningEmailOnce($stuntingLocations, $forceSend)
+    public static function sendStuntingWarningEmailOnce($stuntingLocations, $forceSend)
     {
         $cacheKey = 'last_stunting_email_locations';
         $lastStuntingEmailLocations = Cache::get($cacheKey, []);
 
         // Check if the current stunting locations are different from the last cached locations
         if (array_diff($stuntingLocations, $lastStuntingEmailLocations) || array_diff($lastStuntingEmailLocations, $stuntingLocations) || $forceSend == "kirim") {
-            $emailContent = "Yth. Bapak/Ibu,\n\nKami ingin memberitahukan bahwa jumlah pasien dengan status stunting telah mencapai tingkat yang tinggi di beberapa kelurahan. Berikut adalah daftar kelurahan yang memiliki status stunting dan obesitas tinggi:\n\n" . implode("\n", $stuntingLocations) . "\n\nKami sangat mengkhawatirkan kondisi ini dan berharap dapat segera mengambil tindakan yang diperlukan untuk menanggulangi masalah stunting di wilayah ini.\n\nTerima kasih atas perhatian dan kerjasamanya.\n\nSalam,\nTim Kesehatan";
+            $emailContentData = [
+                'stuntingLocations' => $stuntingLocations,
+            ];
             
-            $uniqueEmails = Pasien::distinct()->pluck('email_ortu')->toArray(); // Email orang tua
-            $additionalRecipients  = ['humamaziz03@gmail.com']; // Email tambahan, di luar email orang tua
+            $uniqueEmails = array_merge(
+                Pasien::distinct()->pluck('email_ortu')->toArray(), // Email orang tua
+                User::distinct()->pluck('email')->toArray() // Email pengguna (admin, operator, user)
+            );
+            $additionalRecipients  = ['humamaziz03@gmail.com']; // Email tambahan
             $recipients = array_filter(array_merge($uniqueEmails, $additionalRecipients));
-
-            Mail::raw($emailContent, function ($message) use ($recipients) {
+            
+            Mail::send('emails.stunting_alert', $emailContentData, function ($message) use ($recipients) {
                 $message->to($recipients)
                     ->subject('Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
             });
@@ -196,16 +194,19 @@ class LokasiController extends Controller
             $emailContent = "Yth. Bapak/Ibu,\n\nKami ingin memberitahukan bahwa jumlah pasien dengan status stunting telah mencapai tingkat yang tinggi di beberapa kelurahan. Berikut adalah daftar kelurahan yang memiliki status stunting dan obesitas tinggi:\n\n" . "TESSS TOKKK" . "\n\nKami sangat mengkhawatirkan kondisi ini dan berharap dapat segera mengambil tindakan yang diperlukan untuk menanggulangi masalah stunting di wilayah ini.\n\nTerima kasih atas perhatian dan kerjasamanya.\n\nSalam,\nTim Kesehatan";
             
             // $additionalRecipients  = ['savage.kuosong@gmail.com', 'humamaziz03@gmail.com', 'justdella.24@gmail.com'];
-            $uniqueEmails = Pasien::distinct()->pluck('email_ortu')->toArray();
-            $additionalRecipients  = ['humamaziz03@gmail.com'];
+            $uniqueEmails = array_merge(
+                Pasien::distinct()->pluck('email_ortu')->toArray(), // Email orang tua
+                User::distinct()->pluck('email')->toArray() // Email pengguna (admin, operator, user)
+            );
+            $additionalRecipients  = ['humamaziz03@gmail.com']; // Email tambahan
             $recipients = array_filter(array_merge($uniqueEmails, $additionalRecipients));
 
-            Mail::raw($emailContent, function ($message) use ($recipients) {
-                $message->to($recipients)
-                    ->subject('TEST 2 - Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
-            });
+            // Mail::raw($emailContent, function ($message) use ($recipients) {
+            //     $message->to($recipients)
+            //         ->subject('TEST 2 - Peringatan Tingkat Stunting Tinggi di Beberapa Kelurahan');
+            // });
 
-            return response('Hello, this is a simple text response.');
+            return response($recipients);
 
             // Update the last stunting email locations in cache
             // Cache::put($cacheKey, $stuntingLocations, now()->addDay()); // Cache for 1 day

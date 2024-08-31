@@ -17,6 +17,12 @@
                     </div>
                     @endif
 
+                    @if(session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                    @endif
+
                     <!-- Alert untuk gagal validasi form -->
                     @if($errors->any())
                     <div class="alert alert-danger" role="alert">

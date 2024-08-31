@@ -41,6 +41,27 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="tempat_lahir" class="form-control-label">Tempat Lahir</label>
+                                        <input id="tempat_lahir" name="tempat_lahir" class="form-control" type="text"
+                                            value="{{ $pasien->tempat_lahir }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="nama_ortu" class="form-control-label">Nama Orang Tua</label>
+                                        <input id="nama_ortu" name="nama_ortu" class="form-control" type="text"
+                                            value="{{ $pasien->nama_ortu }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email_ortu" class="form-control-label">Email Orang Tua</label>
+                                        <input id="email_ortu" name="email_ortu" class="form-control" type="email"
+                                            value="{{ $pasien->email_ortu }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="alamat" class="form-control-label">Alamat</label>
                                         <input id="alamat" name="alamat" class="form-control" type="text"
                                             value="{{ $pasien->alamat }}" readonly>
@@ -57,9 +78,10 @@
                             </div>
                             <a href="{{ route('list-pasien') }}" class="btn btn-secondary btn-sm">Kembali</a>
                             @if (auth()->user()->role != 'Guest')
-                            <button type="button" class="btn btn-primary btn-sm float-end" style="margin-left: 5px"
-                            onclick="window.location='{{ route('tambah-pengukuran', ['id' => $id]) }}'">+ Tambah Data
-                            Pengukuran</button>
+                                <button type="button" class="btn btn-primary btn-sm float-end" style="margin-left: 5px"
+                                    onclick="window.location='{{ route('tambah-pengukuran', ['id' => $id]) }}'">+ Tambah
+                                    Data
+                                    Pengukuran</button>
                             @endif
                             <a onclick="window.print();" class="btn btn-warning btn-sm float-end">Print</a>
                         </form>
@@ -67,7 +89,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <div class="card z-index-2 h-100">
@@ -81,7 +103,7 @@
                     </div>
                 </div>
             </div>
-            
+
 
             {{-- Grafik kedua --}}
             <div class="col-lg-12 mb-4">
@@ -143,66 +165,82 @@
                                             Tinggi Badan</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Status Gizi Pasien</th>
+                                            BB/U</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Status Tinggi Pasien</th>
+                                            TB/U</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                            Kategori</th>
+                                            BB/TB</th>
                                         <th
                                             class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 no-print">
                                             Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($measurements as $index => $measurement)
-                                        <tr>
-                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $index + 1 }}</td>
-                                            <td class="text-secondary font-weight-bold text-xs">
-                                                {{ Carbon::parse($measurement->tanggal_pengukuran)->translatedFormat('d F Y') }}
-                                            </td>
-                                            <td class="text-secondary font-weight-bold text-xs">{{ $measurement->umur }}
-                                                Bulan</td>
-                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $measurement->berat_badan }}</td>
-                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $measurement->tinggi_badan }}</td>
-                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $statusGizi[$index] }}</td>
-                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $statusTinggi[$index] }}</td>
-                                            <td class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                {{ $statusWH[$index] }}</td>
-                                            <td class="align-middle text-center no-print">
-                                                 @if (auth()->user()->role != 'Guest')
-                                                <div class="d-inline-flex flex-column align-items-center">
-                                                    @if ($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
-                                                        <a href="{{ route('edit-pengukuran', ['id' => $measurement->id]) }}"
-                                                            class="btn btn-warning btn-sm mb-2"
-                                                            style="width: 80px; padding: 5px;">EDIT</a>
-                                                        <form id="delete-form-{{ $measurement->id }}"
-                                                            action="{{ route('delete-pengukuran', ['id' => $measurement->id]) }}"
-                                                            method="POST">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="button" class="btn btn-danger btn-sm"
-                                                                style="width: 80px; padding: 5px;"
-                                                                onclick="confirmDelete({{ $measurement->id }})">HAPUS</button>
-                                                        </form>
-                                                    @endif
-                                                </div>
-                                                 @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    @if ($measurements->isEmpty())
+                                    @if ($measurements->isEmpty() || $measurements[0]->berat_badan == "0.00")
                                         <tr>
                                             <td colspan="8"
                                                 class="text-center text-secondary font-weight-bold text-xs">Tidak ada data
                                                 pengukuran</td>
                                         </tr>
+                                    @else
+                                        @php
+                                            $nomor = 1;
+                                        @endphp
+                                        @foreach ($measurements as $index => $measurement)
+                                            @if ($measurement->berat_badan == 0 && $measurement->tinggi_badan == 0)
+                                                @continue
+                                            @else
+                                                <tr>
+                                                    <td
+                                                        class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $nomor++ }}</td>
+                                                    <td class="text-secondary font-weight-bold text-xs">
+                                                        {{ Carbon::parse($measurement->tanggal_pengukuran)->translatedFormat('d F Y') }}
+                                                    </td>
+                                                    <td class="text-secondary font-weight-bold text-xs">
+                                                        {{ $measurement->umur }}
+                                                        Bulan</td>
+                                                    <td
+                                                        class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $measurement->berat_badan }}</td>
+                                                    <td
+                                                        class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $measurement->tinggi_badan }}</td>
+                                                    <td
+                                                        class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $statusGizi[$index] }}</td>
+                                                    <td
+                                                        class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $statusTinggi[$index] }}</td>
+                                                    <td
+                                                        class="align-middle text-center text-secondary font-weight-bold text-xs">
+                                                        {{ $statusWH[$index] }}</td>
+                                                    <td class="align-middle text-center no-print">
+                                                        @if (auth()->user()->role != 'Guest')
+                                                            <div class="d-inline-flex flex-column align-items-center">
+                                                                @if ($index > 0 || ($index == 0 && $measurement->berat_badan != 0 && $measurement->tinggi_badan != 0))
+                                                                    <a href="{{ route('edit-pengukuran', ['id' => $measurement->id]) }}"
+                                                                        class="btn btn-warning btn-sm mb-2"
+                                                                        style="width: 80px; padding: 5px;">EDIT</a>
+                                                                    <form id="delete-form-{{ $measurement->id }}"
+                                                                        action="{{ route('delete-pengukuran', ['id' => $measurement->id]) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="button"
+                                                                            class="btn btn-danger btn-sm"
+                                                                            style="width: 80px; padding: 5px;"
+                                                                            onclick="confirmDelete({{ $measurement->id }})">HAPUS</button>
+                                                                    </form>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
                                     @endif
                                 </tbody>
                             </table>
@@ -239,21 +277,27 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    
-    
     const Age = @json($pasien->umur);
 
     const measurementData = @json($measurements);
 
-    
     function filterInvalidPoints(points) {
         return points.filter(point => point.x !== null && point.y !== null);
     }
 
     // Create arrays for all measurement points
-    const weightToAgePoints = measurementData.map(measurement => ({ x: measurement.umur, y: measurement.berat_badan }));
-    const heightToAgePoints = measurementData.map(measurement => ({ x: measurement.umur, y: measurement.tinggi_badan }));
-    const weightToHeightPoints = measurementData.map(measurement => ({ x: measurement.tinggi_badan, y: measurement.berat_badan })).sort((a, b) => a.x - b.x).slice(1);
+    const weightToAgePoints = measurementData.map(measurement => ({
+        x: measurement.umur,
+        y: measurement.berat_badan
+    }));
+    const heightToAgePoints = measurementData.map(measurement => ({
+        x: measurement.umur,
+        y: measurement.tinggi_badan
+    }));
+    const weightToHeightPoints = measurementData.map(measurement => ({
+        x: measurement.tinggi_badan,
+        y: measurement.berat_badan
+    })).sort((a, b) => a.x - b.x).slice(0);
 
     // Filter out points with 0 or null values for height or weight
     // weightToHeightPoints = weightToHeightPoints.filter(point => point.x && point.y);
@@ -337,7 +381,7 @@
                 pointHoverRadius: 8,
                 type: 'line',
                 fill: false,
-                tension: 0.1 
+                tension: 0.1
             }
         ]
     };
@@ -450,7 +494,7 @@
                 pointHoverRadius: 8,
                 type: 'line',
                 fill: false,
-                tension: 0.1                
+                tension: 0.1
             }
 
         ]
@@ -625,16 +669,22 @@
             padding: 0 !important;
         }
 
-        .no-print, button, .btn, .footer, #navbar {
+        .no-print,
+        button,
+        .btn,
+        .footer,
+        #navbar {
             display: none !important;
         }
 
         .card {
-            page-break-inside: avoid; /* Avoid breaking the charts across pages */
+            page-break-inside: avoid;
+            /* Avoid breaking the charts across pages */
         }
 
         .card-header {
-            text-align: center; /* Optional: Align text to center for better appearance */
+            text-align: center;
+            /* Optional: Align text to center for better appearance */
         }
 
         /* Table settings */
@@ -645,10 +695,12 @@
 
         table {
             width: 100% !important;
-            font-size: 10px; /* Adjust as necessary */
+            font-size: 10px;
+            /* Adjust as necessary */
         }
 
-        th, td {
+        th,
+        td {
             padding: 4px !important;
         }
 
