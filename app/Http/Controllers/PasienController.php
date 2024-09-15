@@ -439,7 +439,10 @@ class PasienController extends Controller
                 'kategori' => $statusWH
             ]);
 
-            return redirect()->route('list-pasien')->with('success', 'Data pasien berhasil ditambahkan');
+            $hasil = "ZBB: " . $ZScoreWeight . ", ZTB: " . $ZScoreHeight . ", ZBBTB: " . $ZScoreWH;
+            $hasil = $hasil . " | " . $statusGizi . ", " . $statusTinggi . ", " . $statusWH;
+
+            return redirect()->route('list-pasien')->with('success', $hasil);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal memperbarui data pengukuran');
         }

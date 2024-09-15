@@ -12,6 +12,11 @@
         </div>
         <div class="row">
             <div class="col-12">
+                @if (session('success'))
+                    <div class="alert alert-success text-white" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
                 <div class="card mb-4">
                     <div class="card-header pb-0">
                         <div class="d-flex justify-content-between">

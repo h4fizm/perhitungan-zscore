@@ -91,7 +91,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lembaga" class="form-control-label">Lembaga Faskes yang dipilih</label>
-                                        <select id="faskes" name="faskes" class="form-control" @if (auth()->user()->role == 'Operator') disabled @endif>
+                                        <select id="faskes" name="faskes" class="form-control">
                                             @foreach ($faskes as $key => $value)
                                                 @if (auth()->user()->role == 'Operator')
                                                     @if (auth()->user()->id_location == $key)

@@ -67,7 +67,6 @@
                             {{-- Button Kembali --}}
                             <a href="{{ route('list-pasien')}}" class="btn btn-secondary btn-sm" id="btnKembali">Kembali</a>
                             <button type="submit" class="btn btn-primary btn-sm float-end">Simpan</button>
-                            <a class="btn btn-warning btn-sm" style="width:150px" id="dataToggle">Matikan Data</a>
                         </form>
                 </div>
             </div>
@@ -85,24 +84,6 @@
     var dataBeratBadan = null;
     var dataTinggiBadan = null;
     var dataToggle = true; // Default for tambah data
-
-    function toggleData() {
-        // Toggle the boolean variable
-        dataToggle = !dataToggle;
-
-        // Get the button element
-        const button = document.getElementById('dataToggle');
-
-        // Change the button text based on the boolean variable
-        if (dataToggle) {
-            button.textContent = 'Matikan Data';
-        } else {
-            button.textContent = 'Hidupkan Data';
-        }
-    }
-
-    // Add event listener to the button
-    document.getElementById('dataToggle').addEventListener('click', toggleData);
 
     function connect() {
         const client = new Paho.Client(brokerUrl, clientId);
