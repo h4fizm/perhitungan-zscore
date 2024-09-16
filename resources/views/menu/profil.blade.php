@@ -84,9 +84,12 @@
                             {{ $user->name }}<span class="font-weight-light"></span>
                         </h5>
                         <div class="h6 font-weight-300">
-                            <i class="ni location_pin mr-2">
-                                {{ $user->role }} - {{ $user->location->name_location ?? '' }}
-                            </i>
+                        <i class="ni location_pin mr-2">
+                            {{ $user->role }}
+                            @if($user->role !== 'Guest')
+                                - {{ $user->location->name_location ?? '' }}
+                            @endif
+                        </i>
                         </div>
                     </div>
                 </div>

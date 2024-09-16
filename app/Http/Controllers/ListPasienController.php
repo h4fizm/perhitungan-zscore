@@ -205,7 +205,7 @@ class ListPasienController extends Controller
             // Hapus semua pasien dengan nik yang sama
             Pasien::where('nik', $nik)->delete();
 
-            return redirect()->back()->with('success', 'Pasien berhasil dihapus beserta seluruh data yang memiliki nik yang sama.');
+            return redirect()->back()->with('success', 'Pasien berhasil dihapus beserta seluruh data yang memiliki NIK yang sama.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal menghapus pasien.');
         }

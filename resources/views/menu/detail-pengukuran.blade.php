@@ -186,7 +186,10 @@
                                         </tr>
                                     @else
                                         @php
-                                            $nomor = 1;
+                                            $totalMeasurements = $measurements->filter(function($measurement) {
+                                                return $measurement->berat_badan != 0 || $measurement->tinggi_badan != 0;
+                                            })->count();
+                                            $nomor = $totalMeasurements;
                                         @endphp
                                         @foreach ($measurements as $index => $measurement)
                                             @if ($measurement->berat_badan == 0 && $measurement->tinggi_badan == 0)
@@ -195,7 +198,7 @@
                                                 <tr>
                                                     <td
                                                         class="align-middle text-center text-secondary font-weight-bold text-xs">
-                                                        {{ $nomor++ }}</td>
+                                                        {{ $nomor-- }}</td>
                                                     <td class="text-secondary font-weight-bold text-xs">
                                                         {{ Carbon::parse($measurement->tanggal_pengukuran)->translatedFormat('d F Y') }}
                                                     </td>

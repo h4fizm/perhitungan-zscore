@@ -95,4 +95,7 @@ Route::middleware(['auth'])->group(function () {
     // Fungsi Hapus User
     Route::delete('/list-user/{id}', [ListUserController::class, 'destroy'])->name('list-user.destroy');
 
+    // Bulk Add Pengukuran
+    Route::get('/bulk-add-pengukuran', [PasienController::class, 'bulkAddPengukuranForm'])->name('bulk-add-pengukuran-form');
+    Route::post('/bulk-add-pengukuran', [PasienController::class, 'bulkAddPengukuran'])->name('bulk-add-pengukuran');
 });
