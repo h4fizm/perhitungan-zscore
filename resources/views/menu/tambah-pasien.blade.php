@@ -39,6 +39,13 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="no_rekam_medis" class="form-control-label">No. Rekam Medis</label>
+                                        <input id="no_rekam_medis" name="no_rekam_medis" class="form-control" type="text"
+                                            placeholder="Masukkan No. Rekam Medis">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="nama" class="form-control-label">Nama</label>
                                         <input id="nama" name="nama" class="form-control" type="text"
                                             placeholder="Masukkan nama pasien">
@@ -91,11 +98,11 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lembaga" class="form-control-label">Lembaga Faskes yang dipilih</label>
-                                        <select id="faskes" name="faskes" class="form-control">
+                                        <select id="faskes" name="faskes" class="form-control" @if (auth()->user()->role == 'Operator') @endif>
                                             @foreach ($faskes as $key => $value)
                                                 @if (auth()->user()->role == 'Operator')
                                                     @if (auth()->user()->id_location == $key)
-                                                        <option value="{{ $key }}">{{ $value }}</option>
+                                                        <option value="{{ $key }}" selected>{{ $value }}</option>
                                                     @endif
                                                 @else
                                                     <option value="{{ $key }}">{{ $value }}</option>

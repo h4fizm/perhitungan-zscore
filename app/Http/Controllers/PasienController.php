@@ -258,7 +258,7 @@ class PasienController extends Controller
         $tanggal_lahir = Carbon::parse($pasien->tanggal_lahir);
         $umur = $tanggal_lahir->diffInMonths(Carbon::now());
 
-        return view('menu.tambah-pengukuran', compact('pasien', 'jenis_kelamin', 'faskes', 'id', 'umurOptions', 'umur'));
+        return view('menu.tambah-pengukuran', compact('pasien', 'jenis_kelamin', 'faskes', 'id', 'umurOptions', 'umur', 'tanggal_lahir'));
     }
 
     public function simpan(Request $request, $id)
@@ -428,30 +428,34 @@ class PasienController extends Controller
                 }
             }
 
-            if (in_array($statusWH, ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']) && in_array($statusGizi, ["Berat badan sangat kurang", "Berat badan kurang"])) {
+            if (in_array($statusWH, ['Gizi baik', 'Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']) && in_array($statusGizi, ["Berat badan sangat kurang", "Berat badan kurang"])) {
                 $statusWH = "Gizi kurang";
-            } else if (in_array($statusWH, ['Gizi kurang', 'Gizi buruk']) && in_array($statusGizi, ["Resiko berat badan lebih"])) {
+            } else if (in_array($statusWH, ['Gizi baik', 'Gizi kurang', 'Gizi buruk']) && in_array($statusGizi, ["Resiko berat badan lebih"])) {
                 $statusWH = "Gizi lebih";
             }
 
+            $tanggal_pengukuran = Carbon::parse($request->tanggal_pengukuran);
+
             // Simpan data pasien ke database
             Pasien::create([
-                'nik' => Pasien::findOrFail($id)->nik,
-                'nama' => Pasien::findOrFail($id)->nama,
+                'nik' => $pasien->nik,
+                'no_rekam_medis' => $pasien->no_rekam_medis,
+                'nama' => $pasien->nama,
                 'jenis_kelamin' => $jenis_kelamin,
-                'tanggal_lahir' => Pasien::findOrFail($id)->tanggal_lahir,
-                'tempat_lahir' => Pasien::findOrFail($id)->tempat_lahir,
-                'nama_ortu' => Pasien::findOrFail($id)->nama_ortu,
-                'email_ortu' => Pasien::findOrFail($id)->email_ortu,
+                'tanggal_lahir' => $pasien->tanggal_lahir,
+                'tempat_lahir' => $pasien->tempat_lahir,
+                'nama_ortu' => $pasien->nama_ortu,
+                'email_ortu' => $pasien->email_ortu,
                 'umur' => $umur,
-                'alamat' => Pasien::findOrFail($id)->alamat,
-                'id_location' => Pasien::findOrFail($id)->location->id,
-                'tanggal_pengukuran' => now(), // Menggunakan nilai saat ini dari created_at
+                'alamat' => $pasien->alamat,
+                'id_location' => $pasien->location->id,
+                'tanggal_pengukuran' => $tanggal_pengukuran,
                 'berat_badan' => $berat_badan,
                 'tinggi_badan' => $tinggi_badan,
                 'status_gizi' => $statusGizi, // Nilai default untuk status gizi
                 'status_tinggi' => $statusTinggi, // Nilai default untuk status tinggi
-                'kategori' => $statusWH
+                'kategori' => $statusWH,
+                'updated_at' => $tanggal_pengukuran
             ]);
 
             $hasil = "ZBB: " . $ZScoreWeight . ", ZTB: " . $ZScoreHeight . ", ZBBTB: " . $ZScoreWH;
@@ -466,7 +470,16 @@ class PasienController extends Controller
     public function edit($id)
     {
         $pengukuran = Pasien::findOrFail($id);
-        return view('menu.edit-pengukuran', compact('pengukuran', 'id'));
+        
+        // Get the original patient record (the one with the actual birth date)
+        $originalPasien = Pasien::where('nik', $pengukuran->nik)
+                                ->orderBy('created_at', 'asc')
+                                ->first();
+
+        $tanggal_lahir = Carbon::parse($originalPasien->tanggal_lahir);
+        $tanggal_pengukuran = Carbon::parse($pengukuran->tanggal_pengukuran);
+
+        return view('menu.edit-pengukuran', compact('pengukuran', 'id', 'tanggal_lahir', 'tanggal_pengukuran'));
     }
 
     public function update(Request $request, $id)
@@ -486,7 +499,11 @@ class PasienController extends Controller
             $tinggi_badan = $request->tinggi_badan;
 
             $jenis_kelamin = $pengukuran->jenis_kelamin;
-            $umur = $pengukuran->umur;
+            // Ambil nilai dari request
+            $berat_badan = $request->berat_badan;
+            $tinggi_badan = $request->tinggi_badan;
+            $tanggal_pengukuran = Carbon::parse($request->tanggal_pengukuran);
+            $umur = $request->umur;
 
             $statusGizi = "data belum diisi";
             $statusTinggi = "data belum diisi";
@@ -640,11 +657,11 @@ class PasienController extends Controller
                 }
             }
 
-            if (in_array($statusWH, ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']) && in_array($statusGizi, ["Berat badan sangat kurang", "Berat badan kurang"])) {
+            if (in_array($statusWH, ['Gizi baik', 'Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']) && in_array($statusGizi, ["Berat badan sangat kurang", "Berat badan kurang"])) {
                 // BB Normal, TB Pendek, BBTB Obesitas = Stunting
                 // BB Kurang, TB Normal
                 $statusWH = "Gizi kurang";
-            } else if (in_array($statusWH, ['Gizi kurang', 'Gizi buruk']) && in_array($statusGizi, ["Resiko berat badan lebih"])) {
+            } else if (in_array($statusWH, ['Gizi baik', 'Gizi kurang', 'Gizi buruk']) && in_array($statusGizi, ["Resiko berat badan lebih"])) {
                 // BB Lebih, TB Normal = Obesitas
                 // BB Lebih, TB 
                 $statusWH = "Gizi lebih";
@@ -653,9 +670,12 @@ class PasienController extends Controller
             // Update data pengukuran dengan data yang dikirimkan dari form
             $pengukuran->berat_badan = $berat_badan;
             $pengukuran->tinggi_badan = $tinggi_badan;
+            $pengukuran->tanggal_pengukuran = $tanggal_pengukuran;
+            $pengukuran->umur = $umur;
             $pengukuran->status_gizi = $statusGizi;
             $pengukuran->status_tinggi = $statusTinggi;
             $pengukuran->kategori = $statusWH;
+            $pengukuran->updated_at = $tanggal_pengukuran;
             $pengukuran->save();
 
             $ZScoreWeight = $this->calculateZScoreWeight($jenis_kelamin, $umur, $berat_badan);
@@ -807,9 +827,9 @@ class PasienController extends Controller
                     $statusTinggi = $this->determineHeightStatus($jenis_kelamin, $umur, $tinggi_badan);
                     $statusWH = $this->determineWeightHeightStatus($jenis_kelamin, $tinggi_badan, $berat_badan);
 
-                    if (in_array($statusWH, ['Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']) && in_array($statusGizi, ["Berat badan sangat kurang", "Berat badan kurang"])) {
+                    if (in_array($statusWH, ['Gizi baik', 'Beresiko gizi lebih', 'Gizi lebih', 'Obesitas']) && in_array($statusGizi, ["Berat badan sangat kurang", "Berat badan kurang"])) {
                         $statusWH = "Gizi kurang";
-                    } else if (in_array($statusWH, ['Gizi kurang', 'Gizi buruk']) && in_array($statusGizi, ["Resiko berat badan lebih"])) {
+                    } else if (in_array($statusWH, ['Gizi baik', 'Gizi kurang', 'Gizi buruk']) && in_array($statusGizi, ["Resiko berat badan lebih"])) {
                         $statusWH = "Gizi lebih";
                     }
                 }

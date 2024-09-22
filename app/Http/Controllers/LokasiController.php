@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use Phpml\Clustering\KMeans;
+use Phpml\Clustering\KMeans\Cluster;
 
 class LokasiController extends Controller
 {
@@ -91,9 +93,43 @@ class LokasiController extends Controller
             $location->jumlah_stunting = $totalStunting;
             $location->jumlah_normal = $totalNormal;
             $location->jumlah_obesitas = $totalObesitas;
+
+            // Calculate percentages
+            $percentNormal = $totalPasien > 0 ? ($totalNormal / $totalPasien) * 100 : 0;
+            $percentStunting = $totalPasien > 0 ? ($totalStunting / $totalPasien) * 100 : 0;
+            $percentObesitas = $totalPasien > 0 ? ($totalObesitas / $totalPasien) * 100 : 0;
+
+            // Add features for clustering
+            $features[] = [$percentNormal, $percentStunting, $percentObesitas];
+        }
+
+        // Perform K-means clustering
+        $kmeans = new KMeans(3); // 3 clusters
+        $clusters = $kmeans->cluster($features);
+
+        // Assign cluster values to locations
+        foreach ($clusters as $index => $cluster) {
+            $value = $this->mapClusterToValue($cluster);
+            // $locations[$index]->update(['value' => $value]);
         }
 
         return view('menu.pemetaan-lokasi', compact('locations'));
+    }
+
+    private function mapClusterToValue($cluster)
+    {
+        // Map cluster numbers to your original values
+        // You may need to adjust this mapping based on the cluster characteristics
+        switch ($cluster) {
+            case 0:
+                return 3; // Low risk
+            case 1:
+                return 2; // Medium risk
+            case 2:
+                return 1; // High risk
+            default:
+                return 3; // Default to low risk
+        }
     }
 
     public function manajemen()

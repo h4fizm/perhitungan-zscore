@@ -13,9 +13,15 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="nik" class="form-control-label">NIK</label>
-                                        <!-- Tambahkan atribut readonly -->
                                         <input id="nik" name="nik" class="form-control" type="text"
                                             value="{{ $pasien->nik }}" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="no_rekam_medis" class="form-control-label">No. Rekam Medis</label>
+                                        <input id="no_rekam_medis" name="no_rekam_medis" class="form-control" type="text"
+                                            value="{{ $pasien->no_rekam_medis }}" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

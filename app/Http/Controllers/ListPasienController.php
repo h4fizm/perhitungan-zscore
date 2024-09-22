@@ -89,6 +89,7 @@ class ListPasienController extends Controller
     {
         $request->validate([
             'nik' => 'required|unique:pasien|digits:16',
+            'no_rekam_medis' => 'required|unique:pasien',
             'nama' => 'required',
             'jenis_kelamin' => 'required',
             'tanggal_lahir' => 'required|date',
@@ -103,6 +104,7 @@ class ListPasienController extends Controller
         // Simpan data pasien ke database
         $pasien = Pasien::create([
             'nik' => $request->nik,
+            'no_rekam_medis' => $request->no_rekam_medis,
             'nama' => $request->nama,
             'jenis_kelamin' => $request->jenis_kelamin,
             'tanggal_lahir' => $request->tanggal_lahir,
@@ -137,6 +139,7 @@ class ListPasienController extends Controller
         if ($pasien->nik === $request->nik) {
             $request->validate([
                 'nik' => 'required|digits:16',
+                'no_rekam_medis' => 'required|unique:pasien,no_rekam_medis,' . $id,
                 'nama' => 'required',
                 'jenis_kelamin' => 'required',
                 'tanggal_lahir' => 'required|date',
@@ -146,6 +149,7 @@ class ListPasienController extends Controller
         } else {
             $request->validate([
                 'nik' => 'required|unique:pasien,nik,' . $id . '|digits:16',
+                'no_rekam_medis' => 'required|unique:pasien,no_rekam_medis,' . $id,
                 'nama' => 'required',
                 'jenis_kelamin' => 'required',
                 'tanggal_lahir' => 'required|date',
@@ -162,6 +166,7 @@ class ListPasienController extends Controller
         if ($pasien->nik === $request->nik) {
             // Jika NIK tidak berubah, update semua entri dengan NIK yang sama
             Pasien::where('nik', $pasien->nik)->update([
+                'no_rekam_medis' => $request->no_rekam_medis,
                 'nama' => $request->nama,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,
@@ -176,6 +181,7 @@ class ListPasienController extends Controller
             // Jika NIK berubah, update semua entri dengan NIK yang sama (NIK lama)
             Pasien::where('nik', $pasien->nik)->update([
                 'nik' => $request->nik,
+                'no_rekam_medis' => $request->no_rekam_medis,
                 'nama' => $request->nama,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tanggal_lahir' => $request->tanggal_lahir,

@@ -39,6 +39,12 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="no_rekam_medis" class="form-control-label">No. Rekam Medis</label>
+                                    <input id="no_rekam_medis" name="no_rekam_medis" class="form-control" type="text" value="{{ $pasien->no_rekam_medis }}" placeholder="Masukkan No. Rekam Medis">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label for="nama" class="form-control-label">Nama</label>
                                     <input id="nama" name="nama" class="form-control" type="text" value="{{ $pasien->nama }}" placeholder="Masukkan nama Anda">
                                 </div>
