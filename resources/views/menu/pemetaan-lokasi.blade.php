@@ -2,6 +2,32 @@
 @extends('main')
 @section('title', 'Pemetaan Lokasi')
 @section('content')
+    <style>
+        .bg-custom-green {
+            background-color: #66ae3d;
+            color: white;
+        }
+
+        .bg-custom-light-green {
+            background-color: #a1cc3a;
+            color: white;
+        }
+
+        .bg-custom-teal {
+            background-color: #a2dad9;
+            color: black;
+        }
+
+        .bg-custom-blue {
+            background-color: #3bb8c5;
+            color: white;
+        }
+
+        .bg-custom-pink {
+            background-color: #de2a85;
+            color: white;
+        }
+    </style>
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-lg-12"> <!-- Kolom untuk peta -->
@@ -17,6 +43,112 @@
             </div>
         </div>
     </div>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h3 class="card-title">Hasil Clustering K-Means</h3>
+                    </div>
+                    <div class="card-body">
+                        {{-- <h4>Location Clusters</h4> --}}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Area</th>
+                                        <th>Status Area</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($locations as $location)
+                                        @php
+                                            $value = $location->value;
+                                            switch ($value) {
+                                                case 5:
+                                                    $riskText = '< 2.5% (Sangat Rendah)';
+                                                    $badgeClass = 'bg-custom-green';
+                                                    $color = '#66ae3d';
+                                                    break;
+                                                case 4:
+                                                    $riskText = '2.5% s.d. < 10% (Rendah)';
+                                                    $badgeClass = 'bg-custom-light-green';
+                                                    $color = '#a1cc3a';
+                                                    break;
+                                                case 3:
+                                                    $riskText = '10% s.d. < 20% (Menengah)';
+                                                    $badgeClass = 'bg-custom-teal';
+                                                    $color = '#a2dad9';
+                                                    break;
+                                                case 2:
+                                                    $riskText = '20% s.d. < 30% (Tinggi)';
+                                                    $badgeClass = 'bg-custom-blue';
+                                                    $color = '#3bb8c5';
+                                                    break;
+                                                case 1:
+                                                    $riskText = '≥ 30% (Sangat Tinggi)';
+                                                    $badgeClass = 'bg-custom-pink';
+                                                    $color = '#de2a85';
+                                                    break;
+                                                default:
+                                                    $riskText = 'Tidak ada data';
+                                                    $badgeClass = 'bg-secondary';
+                                                    $color = '#6c757d';
+                                            }
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $location->name_location }}</td>
+                                            <td><span class="badge {{ $badgeClass }}">{{ $riskText }}</span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        var data = @json($visualizationData);
+        var traces = [];
+        var clusters = [...new Set(data.map(point => point.cluster))];
+        clusters.forEach(cluster => {
+            var clusterData = data.filter(point => point.cluster === cluster);
+            traces.push({
+                x: clusterData.map(point => point.x),
+                y: clusterData.map(point => point.y),
+                z: clusterData.map(point => point.z),
+                mode: 'markers',
+                type: 'scatter3d',
+                name: 'Cluster ' + cluster
+            });
+        });
+
+        var layout = {
+            scene: {
+                xaxis: {
+                    title: 'Normal'
+                },
+                yaxis: {
+                    title: 'Stunting'
+                },
+                zaxis: {
+                    title: 'Obesitas'
+                }
+            },
+            margin: {
+                l: 0,
+                r: 0,
+                b: 0,
+                t: 0
+            }
+        };
+
+        Plotly.newPlot('cluster-visualization', traces, layout);
+    </script>
 
     <!-- Leaflet JS Javascript -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -34,12 +166,16 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-      // Fungsi untuk membuat konten pop-up
+        // Fungsi untuk membuat konten pop-up
         function createPopupContent(name, id) {
             var totalPasien = 0;
             var totalStunting = 0;
             var totalNormal = 0;
             var totalObesitas = 0;
+            var percentStunting = 0;
+            var percentNormal = 0;
+            var percentObesitas = 0;
+            var resiko = "";
 
             @foreach ($locations as $location)
                 if ("{{ $location->name_location }}" === name) {
@@ -47,9 +183,27 @@
                     totalStunting += {{ $location->jumlah_stunting }};
                     totalNormal += {{ $location->jumlah_normal }};
                     totalObesitas += {{ $location->jumlah_obesitas }};
+                    percentStunting = totalPasien > 0 ? (totalStunting / totalPasien) * 100 : 0;
+                    percentNormal = totalPasien > 0 ? (totalNormal / totalPasien) * 100 : 0;
+                    percentObesitas = totalPasien > 0 ? (totalObesitas / totalPasien) * 100 : 0;
+                    resiko = "{{ $location->value }}";
                 }
             @endforeach
-            
+
+            if (resiko == "5") {
+                resiko = "< 2.5% (Sangat Rendah)";
+            } else if (resiko == "4") {
+                resiko = "2.5% s.d. < 10% (Rendah)";
+            } else if (resiko == "3") {
+                resiko = "10% s.d. < 20% (Menengah)";
+            } else if (resiko == "2") {
+                resiko = "20% s.d. < 30% (Tinggi)";
+            } else if (resiko == "1") {
+                resiko = "≥ 30% (Sangat Tinggi)";
+            } else {
+                resiko = "Tidak ada data";
+            }
+
             var userRole = "{{ auth()->user()->role }}"
             var userLocationId = "{{ auth()->user()->id_location }}"
             var buttonHTML = '';
@@ -64,10 +218,11 @@
 
             return `<div class="popup-content">
                 <div style="margin-bottom: 15px; font-size: 16px; font-weight: bold;">${name}</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Resiko : ${resiko}</div>
                 <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Total Pasien : ${totalPasien}</div>
-                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Stunting : ${totalStunting}</div>
-                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Normal : ${totalNormal}</div>
-                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Obesitas : ${totalObesitas}</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Stunting : ${totalStunting} - ${percentStunting.toFixed(2)}%</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Normal : ${totalNormal} - ${percentNormal.toFixed(2)}%</div>
+                <div style="margin-bottom: 15px; font-size: 13px; font-weight: bold;">Pasien Obesitas : ${totalObesitas} - ${percentObesitas.toFixed(2)}%</div>
                 ${buttonHTML}
             </div>`;
         }
@@ -81,15 +236,19 @@
 
         // Fungsi untuk menentukan warna berdasarkan nilai
         function getColor(value) {
-            {{-- console.log(value) --}}
-            if (value == 3) {
-                return 'green';
+            // {{-- console.log(value) --}}
+            if (value == 5) {
+                return '#66ae3d';
+            } else if (value == 4) {
+                return '#a1cc3a';
+            } else if (value == 3) {
+                return '#a2dad9';
             } else if (value == 2) {
-                return 'yellow';
+                return '#3bb8c5';
             } else if (value == 1) {
-                return 'red';
+                return '#de2a85';
             } else {
-                return 'gray'; // Default color if value is not set
+                return '#d1ced2'; // Default color if value is not set
             }
         }
 
@@ -244,7 +403,9 @@
 
         // Tambahkan poligon ke peta
         var BaratajayaPolygon = L.polygon(BaratajayaCoords, {
-            color: color
+            color: color,
+            fillOpacity: 0.8,
+            weight: 2
         }).addTo(map);
 
         // Tambahkan pop-up ke masing-masing poligon
@@ -378,7 +539,9 @@
 
         // Tambahkan poligon ke peta
         var PucangSewuPolygon = L.polygon(PucangSewuCoords, {
-            color: color
+            color: color,
+            fillOpacity: 0.8,
+            weight: 2
         }).addTo(map);
 
         // Tambahkan pop-up ke masing-masing poligon
@@ -547,7 +710,9 @@
 
         // Kelurahan poligon ke peta
         var KertajayaPolygon = L.polygon(KertajayaCoords, {
-            color: color
+            color: color,
+            fillOpacity: 0.8,
+            weight: 2
         }).addTo(map);
 
         // Tambahkan pop-up ke masing-masing poligon
@@ -767,7 +932,9 @@
 
         // Tambahkan poligon ke peta
         var GubengPolygon = L.polygon(GubengCoords, {
-            color: color
+            color: color,
+            fillOpacity: 0.8,
+            weight: 2
         }).addTo(map);
 
         // Tambahkan pop-up ke masing-masing poligon
@@ -965,7 +1132,9 @@
 
         // Tambahkan poligon ke peta
         var AirlanggaPolygon = L.polygon(AirlanggaCoords, {
-            color: color
+            color: color,
+            fillOpacity: 0.8,
+            weight: 2
         }).addTo(map);
 
         // Tambahkan pop-up ke masing-masing poligon
@@ -1186,7 +1355,9 @@
 
         // Tambahkan poligon ke peta
         var MojoPolygon = L.polygon(MojoCoords, {
-            color: color
+            color: color,
+            fillOpacity: 0.8,
+            weight: 2
         }).addTo(map);
 
         // Tambahkan pop-up ke masing-masing poligon
